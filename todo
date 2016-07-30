@@ -1,0 +1,9 @@
+		TODO::
+
+	- benchmark des méthodes pour faire des polynômes multivariés
+	- compréhension des maths
+	- principe de transposition
+
+		BENCHMARK::
+	- Avec fq_poly : on a factor et on peut faire x^(-1)
+	- En construisant tout : on a PAS factor et on peut pas faire x^(-1)
