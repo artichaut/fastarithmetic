@@ -179,6 +179,9 @@ function computeR{polyT}(P::polyT,Q::polyT)
   return berlekampMassey{T}(t,m*n)
 end
 
+
+### ESPACE DE TESTS ###
+
 k,u=FiniteField(5,1,"u")
 R,t=PolynomialRing(k,"t")
 
