@@ -7,3 +7,7 @@
 		BENCHMARK::
 	- Avec fq_poly : on a factor et on peut faire x^(-1)
 	- En construisant tout : on a PAS factor et on peut pas faire x^(-1)
+
+		QUESTION::
+	Quand T=fq_nmod, on a Poly{T}!=fq_nmod_poly... Ça pose des problèmes pour
+	faire des fonctions paramétriques dépendant de T...

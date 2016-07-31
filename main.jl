@@ -17,7 +17,9 @@ function monomialToDual(a,P)
   """
   k=parent(a[1])
   m=degree(P)
-  R,t=PolynomialRing(k,"t") # creation of polynom space and power series space
+  R=parent(P)
+  t=gen(R)
+  # R,t=PolynomialRing(k,"t") # creation of polynom space and power series space
   S,x=PowerSeriesRing(k,m,"x")
   Q=reverse(P,m+1)
   Q=S([k(coeff(P,i)) for i in 0:(m-1)],m,m) # the k(coeff(...)) is here to be sure that we work with the correct type
@@ -45,7 +47,9 @@ function dualToMonomial(b,P)
   """
   k=parent(b[1])
   m=degree(P)
-  R,t=PolynomialRing(k,"t")
+  R=parent(P)
+  t=gen(R)
+#  R,t=PolynomialRing(k,"t")
   S=gcdinv(derivative(P),P)[2]
   c=(reverse(P,m+1)*R(b))%(t^m)
   c=reverse(c,m)
@@ -133,9 +137,13 @@ function embed(b,P,c,Q,r=0)
   return fq_nmod[t[j]*u[j] for j in 1:r]
 end
 
-function berlekampMassey{T}(a::Array{T,1},n::Int64)
-  k=parent(a[1])
-  S,x=PolynomialRing(k,"x")
+function berlekampMassey{T}(a::Array{T,1},n::Int64,S=0)
+  if S==0
+    k=parent(a[1])
+    S,x=PolynomialRing(k,"x")
+  else
+    x=gen(S)
+  end
   polyT=typeof(x)
   m::Int64=2*n-1
   R0::polyT=S(x^(2*n))
@@ -159,16 +167,16 @@ function computeR{polyT}(P::polyT,Q::polyT)
   T=typeof(coeff(P,0))
   k=parent(coeff(P,0))
 
-  vp::Array{T,1}=Array{T,m} # creation of the vector (1,0,...,0) (length m)
+  vp::Array{T,1}=Array(T,m) # creation of the vector (1,0,...,0) (length m)
   vp[1]=k(1)
   for j in 2:m
-    up[i]=k(0)
+    vp[j]=k(0)
   end
 
-  vq::Array{T,1}=Array{T,n} # creation of the vector (1,0,...,0) (length n)
+  vq::Array{T,1}=Array(T,n) # creation of the vector (1,0,...,0) (length n)
   vq[1]=k(1)
   for j in 2:n
-    uq[j]=k(0)
+    vq[j]=k(0)
   end
 
   up=monomialToDual(vp,P)
@@ -176,19 +184,48 @@ function computeR{polyT}(P::polyT,Q::polyT)
 
   t=embed(up,P,uq,Q,2*m*n)
 
-  return berlekampMassey{T}(t,m*n)
+  return berlekampMassey(t,m*n,parent(P))
+end
+
+function project(a::Array{fq_nmod,1},P::fq_nmod_poly,Q::fq_nmod_poly)
+  n::Int64=degree(Q)
+  m::Int64=degree(P)
+  c::Array{fq_nmod,1}=Array(fq_nmod,n)
+  k=parent(coeff(Q,0))
+  c[1]=k(1)
+  for j in 2:n
+    c[j]=k(0)
+  end
+  u::Array{fq_nmod,1}=remTnaif(c,Q,m*n)
+  println(u)
+  K=parent(P)
+  d=K([a[j]*u[j] for j in 1:(m*n)])%P
+  return fq_nmod[coeff(d,j) for j in 0:(m-1)]
 end
 
 
 ### ESPACE DE TESTS ###
 
 k,u=FiniteField(5,1,"u")
-R,t=PolynomialRing(k,"t")
+T,t=PolynomialRing(k,"t")
 
 P=t^3+t+1
 Q=t^2+t+1
 
-computeR(P,Q)
+parent(P)
+
+R=computeR(P,Q)
+
+R+P
+
+uq=monomialToDual(fq_nmod[k(1),k(0)],Q)
+up=monomialToDual(fq_nmod[k(1),k(0),k(0)],P)
+a=embed(up,P,uq,Q)
+aa=dualToMonomial(a,R)
+
+
+project(aa,P,Q)
+
 
 t=Array(fq_nmod,3)
 typeof(t)
