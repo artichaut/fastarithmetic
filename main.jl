@@ -127,7 +127,7 @@ end
 
 function embed(b,P,c,Q,r=0)
   """
-  Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q).
+  Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q)}.
   """
   if r==0
     r=length(b)*length(c)
@@ -202,7 +202,6 @@ function project(a::Array{fq_nmod,1},P::fq_nmod_poly,Q::fq_nmod_poly)
   d=K([a[j]*u[j] for j in 1:(m*n)])%P
   return fq_nmod[coeff(d,j) for j in 0:(m-1)]
 end
-
 
 ### ESPACE DE TESTS ###
 
