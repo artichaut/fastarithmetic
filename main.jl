@@ -85,10 +85,15 @@ function mulT{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
   return R(fq_nmod[b[i] for i in 1:(n+1)])
 end
 
-function remT(r,P,n)
-  """
-    Fonctionne !
-  """
+"""
+    remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
+
+Transposition of the remainder by P algorithm.
+
+It's an other linear extension algorithm. Take the r first values of a linear
+recurring sequence of minimal polynomial P and compute the n first values.
+"""
+function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   m=degree(P)
   k=base_ring(P)
   @assert k==parent(r[1])
