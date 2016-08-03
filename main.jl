@@ -90,8 +90,11 @@ end
 
 Transposition of the remainder by P algorithm.
 
-It's an other linear extension algorithm. Take the r first values of a linear
+An other linear extension algorithm. Take the r first values of a linear
 recurring sequence of minimal polynomial P and compute the n first values.
+
+# Output
+A polynomial which coefficients are the values of the sequence.
 """
 function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   m=degree(P)
@@ -108,14 +111,6 @@ function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   end
   return R-(t^m)*((α*mulT(b,P,n-m))%(t^(n-m+1)))
 end
-
-k,u=FiniteField(1993,1,"u")
-K,t=PolynomialRing(k,"t")
-P=t^2-t-1
-r=fq_nmod[k(1),k(1)]
-
-remT(r,P,10)
-
 
 
 """
@@ -137,34 +132,41 @@ function remTnaif{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   return b
 end
 
-function embed(b,P,c,Q,r=0)
-  """
-  Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q)}.
-  """
+
+"""
+    embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
+
+Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q) in k[z]/(R).
+"""
+function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
   if r==0
     r=length(b)*length(c)
   end
-  t=remTnaif(b,P,r)
-  u=remTnaif(c,Q,r)
+  t::Array{T,1}=remTnaif(b,P,r)
+  u::Array{T,1}=remTnaif(c,Q,r)
   return fq_nmod[t[j]*u[j] for j in 1:r]
 end
 
-function berlekampMassey{T}(a::Array{T,1},n::Int64,S=0)
+"""
+    berlekampMassey{T <: FieldElem}(a::Array{T,1},n::Int64,S=0)
+
+Compute the minimal polynomial of a linear recurring sequence.
+"""
+function berlekampMassey{T <: FieldElem}(a::Array{T,1},n::Int64,S=0)
   if S==0
-    k=parent(a[1])
-    S,x=PolynomialRing(k,"x")
+    k::FqNmodFiniteField=parent(a[1])
+    S::FqNmodPolyRing,x::PolyElem{T}=PolynomialRing(k,"x")
   else
     x=gen(S)
   end
-  polyT=typeof(x)
   m::Int64=2*n-1
-  R0::polyT=S(x^(2*n))
-  R1::polyT=S(reverse(a))
-  V0::polyT=S(0)
-  V1::polyT=S(1)
+  R0::PolyElem{T}=S(x^(2*n))
+  R1::PolyElem{T}=S(reverse(a))
+  V0::PolyElem{T}=S(0)
+  V1::PolyElem{T}=S(1)
   while n<=degree(R1)
-    Q::polyT,R::polyT=divrem(R0,R1)
-    V::polyT=V0-Q*V1
+    Q::PolyElem{T},R::PolyElem{T}=divrem(R0,R1)
+    V::PolyElem{T}=V0-Q*V1
     V0=V1
     V1=V
     R0=R1
@@ -216,39 +218,3 @@ function project(a::Array{fq_nmod,1},P::fq_nmod_poly,Q::fq_nmod_poly)
 end
 
 ### ESPACE DE TESTS ###
-
-k,u=FiniteField(5,1,"u")
-T,t=PolynomialRing(k,"t")
-
-P=t^3+t+1
-Q=t^2+t+1
-
-v=fq_nmod[k(4),k(1)]
-
-dualToMonomial(monomialToDual(v,P),P)
-
-parent(P)
-
-R=computeR(P,Q)
-
-R+P
-
-uq=monomialToDual(fq_nmod[k(1),k(0)],Q)
-up=monomialToDual(fq_nmod[k(1),k(0),k(0)],P)
-a=embed(up,P,uq,Q)
-aa=dualToMonomial(a,R)
-
-
-project(aa,P,Q)
-
-
-t=Array(fq_nmod,3)
-typeof(t)
-t[2]=k(2)
-
-function test{T}(a::T,b::T)
-  return T[a*b,a+b]
-end
-
-
-test(fmpz(2),fmpz(4))
