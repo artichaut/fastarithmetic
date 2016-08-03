@@ -137,6 +137,9 @@ end
     embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
 
 Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q) in k[z]/(R).
+
+# Correctness
+* The algorithm is linear
 """
 function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
   if r==0
@@ -175,11 +178,19 @@ function berlekampMassey{T <: FieldElem}(a::Array{T,1},n::Int64,S=0)
   return V1*lead(V1)^(-1)
 end
 
-function computeR{polyT}(P::polyT,Q::polyT)
+"""
+    computeR{T}(P::PolyElem{T},Q::PolyElem{T})
+
+Compute the composed product R of P and Q.
+
+# Correctness
+* R is irreducible
+
+"""
+function computeR{T}(P::PolyElem{T},Q::PolyElem{T})
   m::Int64=degree(P)
   n::Int64=degree(Q)
-  T=typeof(coeff(P,0))
-  k=parent(coeff(P,0))
+  k=base_ring(P)
 
   vp::Array{T,1}=Array(T,m) # creation of the vector (1,0,...,0) (length m)
   vp[1]=k(1)
@@ -193,26 +204,31 @@ function computeR{polyT}(P::polyT,Q::polyT)
     vq[j]=k(0)
   end
 
-  up=monomialToDual(vp,P)
-  uq=monomialToDual(vq,Q)
+  up::Array{T,1}=monomialToDual(vp,P)
+  uq::Array{T,1}=monomialToDual(vq,Q)
 
-  t=embed(up,P,uq,Q,2*m*n)
+  t::Array{T,1}=embed(up,P,uq,Q,2*m*n)
 
   return berlekampMassey(t,m*n,parent(P))
 end
 
+"""
+    project(a::Array{fq_nmod,1},P::fq_nmod_poly,Q::fq_nmod_poly)
+
+Compute the section of the embedding k[x]/(P) ⟶ k[z]/(R), where R = P ⊙ Q.
+
+"""
 function project(a::Array{fq_nmod,1},P::fq_nmod_poly,Q::fq_nmod_poly)
   n::Int64=degree(Q)
   m::Int64=degree(P)
   c::Array{fq_nmod,1}=Array(fq_nmod,n)
-  k=parent(coeff(Q,0))
+  k::FqNmodFiniteField=base_ring(Q)
   c[1]=k(1)
   for j in 2:n
     c[j]=k(0)
   end
   u::Array{fq_nmod,1}=remTnaif(c,Q,m*n)
-  println(u)
-  K=parent(P)
+  K::FqNmodPolyRing=parent(P)
   d=K([a[j]*u[j] for j in 1:(m*n)])%P
   return fq_nmod[coeff(d,j) for j in 0:(m-1)]
 end
