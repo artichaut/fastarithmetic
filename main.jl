@@ -237,7 +237,7 @@ end
 
 Compute the isomorphism Φ : k[x,y]/(P,Q) ⟶ k[z]/(R).
 
-#Arguments
+# Arguments
 * b::Array{T,2} is a 2d array reprenting (b_ji) where 0 <= i < m and 0 <= j < n, it is
 the transpose of the b_ij of the paper because we prefer to extract columns than lines for
 types reasons.
@@ -255,7 +255,6 @@ function phi1{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   for i in 1:m
     t::Array{T,1}=remTnaif(b[:,i],Q,m*n)
     for j in 1:m*n
-      println((i,j))
       a[j]=a[j]+t[j]*u[i+j-1] # /!\ indices
     end
   end
@@ -263,7 +262,14 @@ function phi1{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
 end
 
 """
-It seems that it's not working.
+    inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
+
+Compute Φ^(-1) : k[z]/(R) ⟶ k[x,y]/(P,Q).
+
+# Output
+* b::Array{T,2} is a 2d array reprenting (b_ji) where 0 <= i < m and 0 <= j < n, it is
+the transpose of the b_ij of the paper because we prefer to extract columns than lines for
+types reasons.
 """
 function inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   k::Nemo.Field=parent(a[1,1])
@@ -277,7 +283,7 @@ function inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for i in m:-1:1
     d::PolyElem{T}=K([a[j]*u[i+j-1] for j in 1:(m*n)])%Q
     for j in 1:n
-    b[j,i]=coeff(d,j)
+    b[j,i]=coeff(d,j-1)
     end
   end
   return b
