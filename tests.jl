@@ -178,6 +178,27 @@ function testPhi1()
   println("PASS")
 end
 
+function testPhi2()
+  print("phi2(), inversePhi2()... ")
+
+  k,u=FiniteField(5,1,"u")
+  K,t=PolynomialRing(k,"t")
+  P=t^2+t+1
+  Q=t^3+t+1
+  un=fq_nmod[k(1) k(0) k(0); k(0) k(0) k(0)]
+  xy=fq_nmod[k(0) k(0) k(0); k(0) k(1) k(0)]
+  a=fq_nmod[k(2) k(1) k(4); k(3) k(1) k(4)]
+  b=fq_nmod[k(3) k(2) k(3); k(1) k(2) k(0)]
+
+  @test phi2(un,P,Q)==[k(1),k(0),k(0),k(0),k(0),k(0)]
+
+  @test phi2(xy,P,Q)==[k(0),k(1),k(0),k(0),k(0),k(0)]
+
+  @test phi2(a+b,P,Q)==phi2(a,P,Q)+phi2(b,P,Q)
+
+  println("PASS")
+end
+
 function testAll()
 
   testMonomialDual()
@@ -186,6 +207,7 @@ function testAll()
   testBerlekampMassey()
   testEmbedProject()
   testPhi1()
+  testPhi2()
 
   println("\nAll tests passed successfully.\n")
 

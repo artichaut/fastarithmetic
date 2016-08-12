@@ -311,25 +311,67 @@ function inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   return b
 end
 
+export phi2
+
 function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   k::Nemo.Field=parent(b[1,1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
+  z=gen(K)
   m::Int64=degree(P)
   n::Int64=degree(Q)
-  N::Int64=n+m+1
+  N::Int64=n+m-1
   p::Int64=ceil(sqrt(N))
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
-  R::polyElem{T}=computeR(P,Q)
+  R::PolyElem{T}=computeR(P,Q)
   S::PolyElem{T}=K(dualToMonomial(embed(up,P,y,Q),R))
-  U::PolyElem{T}=gcdinv(T,R)[2]
-  Tprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+  U::PolyElem{T}=gcdinv(S,R)[2]
+
+  Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+
   for i in 1:(q+1)
-    Tprime[i]=(T^(i-1))%R
+    Sprime[i]=(S^(i-1))%R
   end
 
+  MT::Nemo.Ring=MatrixSpace(K,q,n)
+  mt::MatElem=MT()
+
+  for i in 1:q # access matrices in column is better
+    c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
+    for j in 1:n
+      mt[i,j]=K(c[(j-1)*m+1:j*m]) # /!\ indices
+    end
+  end
+
+  MC::Nemo.Ring=MatrixSpace(K,p,q)
+  mc::MatElem=MC()
+
+  for i in 1:p # /!\ indices
+    for j in 1:q
+      mc[i,j]=K(T[h+i*q+j-m-2 < 1 ? k(0) : h+i*q+j-m-2 > n ? k(0) : b[h,h+i*q+j-m-2] for h in 1:m])
+    end
+  end
+
+  Mv::MatElem=mc*mt
+
+  V::Array{PolyElem{T},1}=Array(PolyElem{T},p)
+  for i in 1:p
+    V[i]=sum([Mv[i,j]*z^((j-1)*m) for j in 1:n])%R
+  end
+
+  a::PolyElem{T}=K()
+
+  for i in p:-1:1
+    a=(Sprime[q+1]*a+V[i])%R
+  end
+
+  a=(a*U^(m-1))%R
+
+  return T[coeff(a,i) for i in 0:(m*n-1)]
 end
+
+1
 
 end
