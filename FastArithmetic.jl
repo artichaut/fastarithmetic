@@ -92,6 +92,39 @@ function mulT{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
   return R(fq_nmod[b[i] for i in 1:(n+1)])
 end
 
+export mulTmid
+
+"""
+    mulTmid{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
+
+The tranposition of the algorithm of multiplication by P. Using middle product.
+
+# Arguments
+* c::Array{T,1} must have length m (degree of P) + n.
+
+# Remark
+* the middle product formula is in [1]
+* I don't really see why n is an argument, since we could obtain it by
+computing n = length(c) - degree(P).
+
+# References
+* [1] : G. Hanrot, M. Quercia, and P. Zimmerman. The middle product algorithm I.
+Appl. Algebra Engrg. Comm. Comput., 14(6):415-438, 2004.
+"""
+function mulTmid{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
+  m::Int64=degree(P)
+  k::Nemo.Field=base_ring(P)
+  @assert k==parent(c[1])
+  R::Nemo.Ring=parent(P)
+  t::PolyElem{T}=gen(R)
+  C::PolyElem{T}=R(c)
+  Q::PolyElem{T}=reverse(P,m+1)
+  prod::PolyElem{T}=Q*C
+  prod=prod%t^(n+m+1)
+  prod=R(T[coeff(prod,j+m) for j in 0:degree(prod)]) # we're looking a bit too factor
+  return prod
+end
+
 export remT
 
 """
@@ -313,6 +346,15 @@ end
 
 export phi2
 
+"""
+    phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
+
+Compute the isomorphism Φ : k[x,y]/(P,Q) ⟶ k[z]/(R).
+
+# Argument
+* This time b::Array{T,2} is the same as the one in the text.
+"""
+
 function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   k::Nemo.Field=parent(b[1,1])
   @assert k==base_ring(P)
@@ -370,6 +412,55 @@ function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   a=(a*U^(m-1))%R
 
   return T[coeff(a,i) for i in 0:(m*n-1)]
+end
+
+export inversePhi2
+
+function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
+  k::Nemo.Field=parent(a[1])
+  @assert k==base_ring(P)
+  K::Nemo.Ring=parent(P)
+  z=gen(K)
+  m::Int64=degree(P)
+  n::Int64=degree(Q)
+  N::Int64=n+m-1
+  p::Int64=ceil(sqrt(N))
+  q::Int64=ceil(N/p)
+  y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
+  up::Array{T,1}=monomialToDual(T[k(1)],P)
+  R::PolyElem{T}=computeR(P,Q)
+  S::PolyElem{T}=K(dualToMonomial(embed(up,P,y,Q),R))
+  U::PolyElem{T}=gcdinv(S,R)[2]
+
+  Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+
+  for i in 1:(q+1)
+    Sprime[i]=(S^(i-1))%R
+  end
+
+  MT::Nemo.Ring=MatrixSpace(K,q,n)
+  mt::MatElem=MT()
+
+  for i in 1:q # access matrices in column is better
+    c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
+    for j in 1:n
+      mt[i,j]=K(c[(j-1)*m+1:j*m]) # /!\ indices
+    end
+  end
+
+  u::PolyElem{T}=U^(m-1)%R
+  du::Int64=degree(u)
+
+  a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),u,m*n-1),j) for j in 0:(m*n-1)]
+
+  V::Array{Array{T,1},1}=Array(Array{T,1},p)
+
+  for i in 1:p
+    V[i]=remTnaif(a,R,m*n+m-1)
+    a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),Sprime[q+1],m*n-1),j) for j in 0:(m*n-1)]
+  end
+
+  return V
 end
 
 1

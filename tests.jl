@@ -37,16 +37,22 @@ function testMonomialDual()
 end
 
 function testMulRem()
-  print("mulT(), remT()... ")
+  print("mulT(), mulTmid(), remT()... ")
 
   k,u=FiniteField(5,1,"u")
   K,t=PolynomialRing(k,"t")
   P=t^2-t+2
   Q=2*t-1
+  a=[k(2),k(1),k(1),k(0),k(3)]
+  b=[k(-1),k(0),k(1),k(2),k(3),k(-1)]
 
-  @test mulT([k(2),k(1),k(1),k(0),k(3)],P,2)==t+4
+  @test mulT(a,P,2)==t+4
 
-  @test mulT([k(-1),k(0),k(1),k(2),k(3),k(-1)],Q,4)==4*t^3+3*t^2+2*t+1
+  @test mulTmid(a,P,2)==t+4
+
+  @test mulT(b,Q,4)==4*t^3+3*t^2+2*t+1
+
+  @test mulTmid(b,Q,4)==4*t^3+3*t^2+2*t+1
 
   l,v=FiniteField(1993,1,"v")
   S,x=PolynomialRing(l,"x")
