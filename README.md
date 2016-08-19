@@ -1,6 +1,6 @@
 # FastArithmetic
 
-[![Build Status](https://travis-ci.org/edouardRousseau/FastArithmetic.jl.svg?branch=master)(https://travis-ci.org/edouardRousseau/FastArithmetic.jl)
+[![Build Status](https://travis-ci.org/edouardRousseau/FastArithmetic.jl.svg?branch=master)](https://travis-ci.org/edouardRousseau/FastArithmetic.jl)
 
 A [Nemo](http://nemocas.org/)/[Julia](http://julialang.org/) library containing embeddings, projections, and isomorphisms between finite fields.
 
