@@ -463,6 +463,4 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   return V
 end
 
-1
-
 end
