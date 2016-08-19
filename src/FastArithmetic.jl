@@ -444,7 +444,7 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for i in 1:q # access matrices in column is better
     c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
     for j in 1:n
-      mt[i,j]=K(c[(j-1)*m+1:j*m]) # /!\ indices
+      mt[i,j]=reverse(K(c[(j-1)*m+1:j*m]),m) # reverse in order to do transposed product
     end
   end
 
@@ -460,7 +460,18 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
     a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),Sprime[q+1],m*n-1),j) for j in 0:(m*n-1)]
   end
 
-  return V
+  MV::Nemo.Ring=MatrixSpace(K,p,n)
+  mv::MatElem=MV()
+
+  for i in 1:p
+    for j in 1:n
+      mv[i,j]=K(V[i][(j-1)*m+1:(j-1)*m-2*m-1])
+    end
+  end
+
+  mc::MatElem=mv*mt
+
+
 end
 
 end

@@ -2,9 +2,6 @@
 #     TESTS
 #################
 
-# For Julia to be able to find FastArithmetic, you can add the statement
-# push!(LOAD_PATH, "/Path/To/My/Module/") in your ~/.juliarc.jl file.
-
 using Nemo, FastArithmetic, Base.Test
 
 function testMonomialDual()
