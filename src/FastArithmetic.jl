@@ -120,8 +120,7 @@ function mulTmid{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
   C::PolyElem{T}=R(c)
   Q::PolyElem{T}=reverse(P,m+1)
   prod::PolyElem{T}=Q*C
-  prod=prod%t^(n+m+1)
-  prod=R(T[coeff(prod,j+m) for j in 0:degree(prod)]) # we're looking a bit too factor
+  prod=R(T[coeff(prod,j+m) for j in 0:(n-1)]) # we're looking a bit too far 
   return prod
 end
 
@@ -473,5 +472,7 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
 
 
 end
+
+1
 
 end
