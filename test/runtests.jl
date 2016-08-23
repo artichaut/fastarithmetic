@@ -243,7 +243,7 @@ function testPhi2()
 
   q=transpose(q)
 
-  @test monomialToDual(phi2(b,P,Q),computeR(P,Q))==a1
+  @test monomialToDual(phi2(q,P,Q),computeR(P,Q))==a1
 
   aa=inversePhi2(monomialToDual(phi2(b1,P,Q),R),P,Q)
 
