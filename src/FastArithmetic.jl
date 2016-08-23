@@ -116,12 +116,9 @@ function mulTmid{T}(c::Array{T,1},P::PolyElem{T},n::Int64)
   k::Nemo.Field=base_ring(P)
   @assert k==parent(c[1])
   R::Nemo.Ring=parent(P)
-  t::PolyElem{T}=gen(R)
   C::PolyElem{T}=R(c)
   Q::PolyElem{T}=reverse(P,m+1)
-  prod::PolyElem{T}=Q*C
-  prod=R(T[coeff(prod,j+m) for j in 0:(n-1)]) # we're looking a bit too far 
-  return prod
+  return shift_right(mullow(Q,C,n+m+1),m)
 end
 
 export remT
@@ -143,7 +140,7 @@ function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   @assert k==parent(r[1])
   K::Nemo.Ring=parent(P)
   t::PolyElem{T}=gen(K)
-  R::PolyElem{T}=K(fq_nmod[r[i] for i in 1:m])# useless creation of a list... memory !
+  R::PolyElem{T}=K(T[r[i] for i in 1:m])# useless creation of a list... memory !
   α::PolyElem{T}=reverse(P,m+1)
   α=gcdinv(α,t^(n-m+1))[2]
   b::Array{T,1}=copy(r)
@@ -239,20 +236,8 @@ function computeR{T}(P::PolyElem{T},Q::PolyElem{T})
   n::Int64=degree(Q)
   k::Nemo.Field=base_ring(P)
 
-  vp::Array{T,1}=Array(T,m) # creation of the vector (1,0,...,0) (length m)
-  vp[1]=k(1)
-  for j in 2:m
-    vp[j]=k(0)
-  end
-
-  vq::Array{T,1}=Array(T,n) # creation of the vector (1,0,...,0) (length n)
-  vq[1]=k(1)
-  for j in 2:n
-    vq[j]=k(0)
-  end
-
-  up::Array{T,1}=monomialToDual(vp,P)
-  uq::Array{T,1}=monomialToDual(vq,Q)
+  up::Array{T,1}=monomialToDual([k(1)],P)
+  uq::Array{T,1}=monomialToDual([k(1)],Q)
 
   t::Array{T,1}=embed(up,P,uq,Q,2*m*n)
 
@@ -443,12 +428,16 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for i in 1:q # access matrices in column is better
     c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
     for j in 1:n
-      mt[i,j]=reverse(K(c[(j-1)*m+1:j*m]),m) # reverse in order to do transposed product
+      mt[i,j]=reverse(K(c[((j-1)*m+1):j*m]),m) # reverse in order to do transposed product
     end
   end
 
+  mt=transpose(mt) # really should construct mt in columns not to transpose
+
   u::PolyElem{T}=U^(m-1)%R
   du::Int64=degree(u)
+
+
 
   a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),u,m*n-1),j) for j in 0:(m*n-1)]
 
@@ -464,15 +453,22 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
 
   for i in 1:p
     for j in 1:n
-      mv[i,j]=K(V[i][(j-1)*m+1:(j-1)*m-2*m-1])
+      mv[i,j]=K(V[i][((j-1)*m+1):((j-1)*m+2*m-1)])
     end
   end
 
   mc::MatElem=mv*mt
+  cc::Array{PolyElem{T},1}=Array{PolyElem{T},1}()
 
+  for i in 1:p
+    for j in 1:q
+      push!(cc,shift_right(truncate(mc[i,j],2*m-1),m-1))
+    end
+  end
 
+  return T[coeff(cc[i-j+m-2],i-1) for i in 1:m, j in 1:n]
 end
 
-1
+println(FastArithmetic comes with even less warranty\n)
 
 end
