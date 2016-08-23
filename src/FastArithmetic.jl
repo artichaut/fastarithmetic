@@ -338,7 +338,6 @@ Compute the isomorphism Φ : k[x,y]/(P,Q) ⟶ k[z]/(R).
 # Argument
 * This time b::Array{T,2} is the same as the one in the text.
 """
-
 function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   k::Nemo.Field=parent(b[1,1])
   @assert k==base_ring(P)
@@ -400,6 +399,14 @@ end
 
 export inversePhi2
 
+"""
+    inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
+
+Compute Φ^(-1) : k[z]/(R) ⟶ k[x,y]/(P,Q).
+
+# Output
+* This time b::Array{T,2} is the same as the one in the text.
+"""
 function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   k::Nemo.Field=parent(a[1])
   @assert k==base_ring(P)
@@ -464,7 +471,7 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
     end
   end
 
-  return T[coeff(cc[i-j+m-2],i-1) for i in 1:m, j in 1:n]
+  return T[coeff(cc[j-i+m],i-1) for i in 1:m, j in 1:n]
 end
 
 println("FastArithmetic comes with even less warranty\n")

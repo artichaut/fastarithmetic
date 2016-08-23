@@ -188,16 +188,86 @@ function testPhi2()
   K,t=PolynomialRing(k,"t")
   P=t^2+t+1
   Q=t^3+t+1
+  R=computeR(P,Q)
   un=fq_nmod[k(1) k(0) k(0); k(0) k(0) k(0)]
   xy=fq_nmod[k(0) k(0) k(0); k(0) k(1) k(0)]
-  a=fq_nmod[k(2) k(1) k(4); k(3) k(1) k(4)]
-  b=fq_nmod[k(3) k(2) k(3); k(1) k(2) k(0)]
+  b1=fq_nmod[k(2) k(1) k(4); k(3) k(1) k(4)]
+  b2=fq_nmod[k(3) k(2) k(3); k(1) k(2) k(0)]
 
   @test phi2(un,P,Q)==[k(1),k(0),k(0),k(0),k(0),k(0)]
 
   @test phi2(xy,P,Q)==[k(0),k(1),k(0),k(0),k(0),k(0)]
 
-  @test phi2(a+b,P,Q)==phi2(a,P,Q)+phi2(b,P,Q)
+  @test phi2(b1+b2,P,Q)==phi2(b1,P,Q)+phi2(b2,P,Q)
+
+  b2p=transpose(copy(b2))
+
+  for i in 1:2
+    b2p[:,i]=monomialToDual(b2p[:,i],Q)
+  end
+
+  @test dualToMonomial(phi1(b2p,P,Q),R)==phi2(b2,P,Q)
+
+  c=inversePhi2(monomialToDual([k(0),k(1),k(0),k(0),k(0),k(0)],R),P,Q)
+
+  for i in 1:3
+    c[:,i]=dualToMonomial(c[:,i],P)
+  end
+
+  c=transpose(c)
+
+  for i in 1:2
+    c[:,i]=dualToMonomial(c[:,i],Q)
+  end
+
+  c=transpose(c)
+
+  @test c==xy
+
+  a1=[k(1),k(3),k(2),k(2),k(0),k(1)]
+  a2=[k(3),k(3),k(0),k(4),k(1),k(2)]
+
+  @test inversePhi2(a1+a2,P,Q)==inversePhi2(a1,P,Q)+inversePhi2(a2,P,Q)
+
+  q=inversePhi2(a1,P,Q)
+
+  for i in 1:3
+    q[:,i]=dualToMonomial(q[:,i],P)
+  end
+
+  q=transpose(q)
+
+  for i in 1:2
+    q[:,i]=dualToMonomial(q[:,i],Q)
+  end
+
+  q=transpose(q)
+
+  @test monomialToDual(phi2(b,P,Q),computeR(P,Q))==a1
+
+  aa=inversePhi2(monomialToDual(phi2(b1,P,Q),R),P,Q)
+
+  for i in 1:3
+    aa[:,i]=dualToMonomial(aa[:,i],P)
+  end
+
+  aa=transpose(aa)
+
+  for i in 1:2
+    aa[:,i]=dualToMonomial(aa[:,i],Q)
+  end
+
+  aa=transpose(aa)
+
+  @test aa==b1
+
+  g=inversePhi1(dualToMonomial(a2,R),P,Q)
+
+  for i in 1:2
+    g[:,i]=monomialToDual(g[:,i],Q)
+  end
+
+  @test transpose(g)==inversePhi2(a2,P,Q)
 
   println("PASS")
 end
