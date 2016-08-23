@@ -469,6 +469,6 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   return T[coeff(cc[i-j+m-2],i-1) for i in 1:m, j in 1:n]
 end
 
-println(FastArithmetic comes with even less warranty\n)
+#println(FastArithmetic comes with even less warranty\n)
 
 end
