@@ -185,8 +185,8 @@ function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::I
   if r==0
     r=length(b)*length(c)
   end
-  A::PolyElem{T}=remTmid(b,P,r-1)
-  B::PolyElem{T}=remTmid(c,Q,r-1)
+  A::PolyElem{T}=remT(b,P,r-1)
+  B::PolyElem{T}=remT(c,Q,r-1)
   t::Array{T,1}=T[coeff(A,j) for j in 0:r-1]
   u::Array{T,1}=T[coeff(B,j) for j in 0:r-1]
   return T[t[j]*u[j] for j in 1:r]
