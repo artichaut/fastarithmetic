@@ -147,7 +147,7 @@ function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   while length(b)<(n+1)
     push!(b,k(0))
   end
-  return R-(t^m)*((α*mulT(b,P,n-m))%(t^(n-m+1)))
+  return R-shift_left((mullow(α,mulTmid(b,P,n-m),n-m+1)),m)
 end
 
 export remTnaif
@@ -185,8 +185,10 @@ function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::I
   if r==0
     r=length(b)*length(c)
   end
-  t::Array{T,1}=remTnaif(b,P,r)
-  u::Array{T,1}=remTnaif(c,Q,r)
+  A::PolyElem{T}=remTmid(b,P,r-1)
+  B::PolyElem{T}=remTmid(c,Q,r-1)
+  t::Array{T,1}=T[coeff(A,j) for j in 0:r-1]
+  u::Array{T,1}=T[coeff(B,j) for j in 0:r-1]
   return T[t[j]*u[j] for j in 1:r]
 end
 
@@ -261,7 +263,8 @@ function project{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for j in 2:n
     c[j]=k(0)
   end
-  u::Array{T,1}=remTnaif(c,Q,m*n)
+  p::PolyElem{T}=remT(c,Q,m*n-1) # it seems : only thing expensive
+  u::Array{T,1}=T[coeff(p,j) for j in 0:m*n-1]
   K::Nemo.Ring=parent(P)
   d::PolyElem{T}=K([a[j]*u[j] for j in 1:(m*n)])%P
   return T[coeff(d,j) for j in 0:(m-1)]
@@ -474,6 +477,6 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   return T[coeff(cc[j-i+m],i-1) for i in 1:m, j in 1:n]
 end
 
-println("FastArithmetic comes with even less warranty\n")
+println("\nFastArithmetic comes with even less warranty\n")
 
 end
