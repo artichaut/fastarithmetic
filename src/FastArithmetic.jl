@@ -129,10 +129,7 @@ export remT
 Transposition of the remainder by P algorithm.
 
 An other linear extension algorithm. Take the r first values of a linear
-recurring sequence of minimal polynomial P and compute the n+1 first values.
-
-# Output
-A polynomial of degree n which coefficients are the values of the sequence.
+recurring sequence of minimal polynomial P and compute the n first values.
 """
 function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   m::Int64=degree(P)
@@ -142,12 +139,13 @@ function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   t::PolyElem{T}=gen(K)
   R::PolyElem{T}=K(T[r[i] for i in 1:m])# useless creation of a list... memory !
   α::PolyElem{T}=reverse(P,m+1)
-  α=gcdinv(α,t^(n-m+1))[2]
+  α=gcdinv(α,t^(n-m))[2]
   b::Array{T,1}=copy(r)
-  while length(b)<(n+1)
+  while length(b)<n
     push!(b,k(0))
   end
-  return R-shift_left((mullow(α,mulTmid(b,P,n-m),n-m+1)),m)
+  ans = R-shift_left((mullow(α,mulTmid(b,P,n-m),n-m)),m)
+  return T[coeff(ans,j) for j in 0:n-1]
 end
 
 export remTnaif
@@ -185,10 +183,8 @@ function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::I
   if r==0
     r=length(b)*length(c)
   end
-  A::PolyElem{T}=remT(b,P,r-1)
-  B::PolyElem{T}=remT(c,Q,r-1)
-  t::Array{T,1}=T[coeff(A,j) for j in 0:r-1]
-  u::Array{T,1}=T[coeff(B,j) for j in 0:r-1]
+  t::Array{T,1}=remT(b,P,r)
+  u::Array{T,1}=remT(c,Q,r)
   return T[t[j]*u[j] for j in 1:r]
 end
 
@@ -263,8 +259,7 @@ function project{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for j in 2:n
     c[j]=k(0)
   end
-  p::PolyElem{T}=remT(c,Q,m*n-1) # it seems : only thing expensive
-  u::Array{T,1}=T[coeff(p,j) for j in 0:m*n-1]
+  u::Array{T,1}=remT(c,Q,m*n) # it seems : only thing expensive
   K::Nemo.Ring=parent(P)
   d::PolyElem{T}=K([a[j]*u[j] for j in 1:(m*n)])%P
   return T[coeff(d,j) for j in 0:(m-1)]
@@ -287,13 +282,13 @@ function phi1{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   @assert k==base_ring(Q)
   m::Int64=degree(P)
   n::Int64=degree(Q)
-  u::Array{T,1}=remTnaif(monomialToDual(T[k(1)],P),P,m*(n+1)-1)
+  u::Array{T,1}=remT(monomialToDual(T[k(1)],P),P,m*(n+1)-1)
   a::Array{T,1}=Array(T,m*n)
   for j in 1:m*n
     a[j]=k(0)
   end
   for i in 1:m
-    t::Array{T,1}=remTnaif(b[:,i],Q,m*n)
+    t::Array{T,1}=remT(b[:,i],Q,m*n)
     for j in 1:m*n
       a[j]=a[j]+t[j]*u[i+j-1] # /!\ indices
     end
@@ -321,7 +316,7 @@ function inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   m::Int64=degree(P)
   n::Int64=degree(Q)
   b::Array{T,2}=Array(T,(n,m))
-  u::Array{T,1}=remTnaif(monomialToDual(T[k(1)],P),P,m*(n+1)-1)
+  u::Array{T,1}=remT(monomialToDual(T[k(1)],P),P,m*(n+1)-1)
   for i in m:-1:1
     d::PolyElem{T}=K([a[j]*u[i+j-1] for j in 1:(m*n)])%Q
     for j in 1:n

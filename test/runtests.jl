@@ -57,9 +57,9 @@ function testMulRem()
   W=x^2-x-1
   Y=t+1
 
-  @test remT(fibo,W,7)==(21)*x^7+(13)*x^6+(8)*x^5+(5)*x^4+(3)*x^3+(2)*x^2+x+(1)
+  @test remT(fibo,W,7)==[k(1),k(1),k(2),k(3),k(5),k(8),k(13)]
 
-  @test remT([k(1)],Y,3)==(4)*t^3+(1)*t^2+(4)*t+(1)
+  @test remT([k(1)],Y,3)==[k(1),k(4),k(1)]
 
   println("PASS")
 end
