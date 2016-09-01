@@ -423,33 +423,32 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   U::PolyElem{T}=gcdinv(S,R)[2]
 
   Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+  Sprime[1]=K(1)
 
-  for i in 1:(q+1)
-    Sprime[i]=(S^(i-1))%R
+  for i in 2:(q+1)
+    Sprime[i]=mulmod(Sprime[i-1],S,R)
   end
 
-  MT::Nemo.Ring=MatrixSpace(K,q,n)
+  MT::Nemo.Ring=MatrixSpace(K,n,q)
   mt::MatElem=MT()
 
-  for i in 1:q # access matrices in column is better
+  for i in 1:q
     c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
     for j in 1:n
-      mt[i,j]=reverse(K(c[(j-1)*m+1:j*m]),m) # reverse in order to do transposed product
+      mt[j,i]=reverse(K(c[(j-1)*m+1:j*m]),m) # reverse in order to do transposed product
     end
   end
 
-  mt=transpose(mt) # really should construct mt in columns not to transpose
-
-  u::PolyElem{T}=U^(m-1)%R
-  du::Int64=degree(u)
-
-  a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),u,m*n-1),j) for j in 0:(m*n-1)]
+  u::PolyElem{T}=powmod(U,m-1,R)
+  W::PolyElem{T}=mulT(remT(a,R,2*m*n-1),u,m*n-1)
+  a=T[coeff(W,j) for j in 0:(m*n-1)]
 
   V::Array{Array{T,1},1}=Array(Array{T,1},p)
 
   for i in 1:p
-    V[i]=remTnaif(a,R,m*n+m-1)
-    a=T[coeff(mulT(remTnaif(a,R,2*m*n-1),Sprime[q+1],m*n-1),j) for j in 0:(m*n-1)]
+    V[i]=remT(a,R,m*n+m-1)
+    X::PolyElem{T}=mulT(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
+    a=T[coeff(X,j) for j in 0:(m*n-1)]
   end
 
   MV::Nemo.Ring=MatrixSpace(K,p,n)
