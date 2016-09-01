@@ -353,9 +353,10 @@ function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   U::PolyElem{T}=gcdinv(S,R)[2]
 
   Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+  Sprime[1]=K(1)
 
-  for i in 1:(q+1)
-    Sprime[i]=(S^(i-1))%R
+  for i in 2:(q+1)
+    Sprime[i]=mulmod(Sprime[i-1],S,R)
   end
 
   MT::Nemo.Ring=MatrixSpace(K,q,n)
