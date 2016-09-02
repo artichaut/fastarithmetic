@@ -372,7 +372,7 @@ function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   MC::Nemo.Ring=MatrixSpace(K,p,q)
   mc::MatElem=MC()
 
-  for i in 1:p 
+  for i in 1:p
     for j in 1:q
       mc[i,j]=K(T[h+i*q+j-m-2 < 1 ? k(0) : h+i*q+j-m-2 > n ? k(0) : b[h,h+i*q+j-m-2] for h in 1:m])
     end
@@ -430,7 +430,7 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   end
 
   MT::Nemo.Ring=MatrixSpace(K,n,q)
-  mt::MatElem=MT()
+  mt::MatElem=MT()  
 
   for i in 1:q
     c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
