@@ -444,13 +444,13 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   a=T[coeff(W,j) for j in 0:(m*n-1)]
 
   V::Array{Array{T,1},1}=Array(Array{T,1},p)
-  X::PolyElem{T}=K()
+  A::PolyElem{T}=K()
 
 
   for i in 1:p
     V[i]=remT(a,R,m*n+m-1)
-    X=mulT(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
-    a=T[coeff(X,j) for j in 0:(m*n-1)]
+    A=mulT(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
+    a=T[coeff(A,j) for j in 0:(m*n-1)]
   end
 
   MV::Nemo.Ring=MatrixSpace(K,p,n)
