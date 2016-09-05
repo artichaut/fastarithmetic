@@ -406,7 +406,7 @@ Compute Φ^(-1) : k[z]/(R) ⟶ k[x,y]/(P,Q).
 # Output
 * This time b::Array{T,2} is the same as the one in the text.
 """
-function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
+function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y)
   k::Nemo.Field=parent(a[1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
@@ -418,11 +418,11 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
-  R::PolyElem{T}=computeR(P,Q)
-  S::PolyElem{T}=K(dualToMonomial(embed(up,P,y,Q),R))
-  U::PolyElem{T}=gcdinv(S,R)[2]
+  R::Y=computeR(P,Q)
+  S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
+  U::Y=gcdinv(S,R)[2]
 
-  Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+  Sprime::Array{Y,1}=Array(Y,q+1)
   Sprime[1]=K(1)
 
   for i in 2:(q+1)
@@ -439,12 +439,12 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
     end
   end
 
-  u::PolyElem{T}=powmod(U,m-1,R)
-  W::PolyElem{T}=mulT(remT(a,R,2*m*n-1),u,m*n-1)
+  u::Y=powmod(U,m-1,R)
+  W::Y=mulT(remT(a,R,2*m*n-1),u,m*n-1)
   a=T[coeff(W,j) for j in 0:(m*n-1)]
 
   V::Array{Array{T,1},1}=Array(Array{T,1},p)
-  A::PolyElem{T}=K()
+  A::Y=K()
 
 
   for i in 1:p
@@ -461,7 +461,7 @@ function inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   end
 
   mc::MatElem=mv*mt
-  cc::Array{PolyElem{T},1}=Array(PolyElem{T},p*q)
+  cc::Array{Y,1}=Array(Y,p*q)
 
   for i in 1:p, j in 1:q
     cc[(i-1)*q+j]=shift_right(truncate(mc[i,j],2*m-1),m-1)
