@@ -336,7 +336,7 @@ Compute the isomorphism Φ : k[x,y]/(P,Q) ⟶ k[z]/(R).
 # Argument
 * This time b::Array{T,2} is the same as the one in the text.
 """
-function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
+function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y)
   k::Nemo.Field=parent(b[1,1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
@@ -348,11 +348,11 @@ function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
-  R::PolyElem{T}=computeR(P,Q)
-  S::PolyElem{T}=K(dualToMonomial(embed(up,P,y,Q),R))
-  U::PolyElem{T}=gcdinv(S,R)[2]
+  R::Y=computeR(P,Q)
+  S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
+  U::Y=gcdinv(S,R)[2]
 
-  Sprime::Array{PolyElem{T},1}=Array(PolyElem{T},q+1)
+  Sprime::Array{Y,1}=Array(Y,q+1)
   Sprime[1]=K(1)
 
   for i in 2:(q+1)
@@ -380,12 +380,12 @@ function phi2{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
 
   Mv::MatElem=mc*mt
 
-  V::Array{PolyElem{T},1}=Array(PolyElem{T},p)
+  V::Array{Y,1}=Array(Y,p)
   for i in 1:p
     V[i]=sum([Mv[i,j]*z^((j-1)*m) for j in 1:n])%R
   end
 
-  a::PolyElem{T}=K()
+  a::Y=K()
 
   for i in p:-1:1
     a=(Sprime[q+1]*a+V[i])%R
@@ -399,7 +399,7 @@ end
 export inversePhi2
 
 """
-    inversePhi2{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
+    inversePhi2{T}(a::Array{T,1},P::Y,Q::Y)
 
 Compute Φ^(-1) : k[z]/(R) ⟶ k[x,y]/(P,Q).
 
