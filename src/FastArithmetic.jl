@@ -382,7 +382,7 @@ function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y)
 
   V::Array{Y,1}=Array(Y,p)
   for i in 1:p
-    V[i]=sum([Mv[i,j]*z^((j-1)*m) for j in 1:n])%R
+    V[i]=sum([shift_left(Mv[i,j],(j-1)*m) for j in 1:n])%R
   end
 
   a::Y=K()
@@ -391,7 +391,7 @@ function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y)
     a=(Sprime[q+1]*a+V[i])%R
   end
 
-  a=(a*U^(m-1))%R
+  a=mulmod(a,U^(m-1),R)
 
   return T[coeff(a,i) for i in 0:(m*n-1)]
 end
@@ -410,7 +410,6 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y)
   k::Nemo.Field=parent(a[1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
-  z=gen(K)
   m::Int64=degree(P)
   n::Int64=degree(Q)
   N::Int64=n+m-1
