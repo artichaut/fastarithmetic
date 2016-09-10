@@ -206,7 +206,7 @@ function testPhi2()
     b2p[:,i]=monomialToDual(b2p[:,i],Q)
   end
 
-  @test dualToMonomial(phi1(b2p,P,Q,R),R)==phi2(b2,P,Q,R)
+  @test dualToMonomial(phi1(b2p,P,Q),R)==phi2(b2,P,Q,R)
 
   c=inversePhi2(monomialToDual([k(0),k(1),k(0),k(0),k(0),k(0)],R),P,Q,R)
 
