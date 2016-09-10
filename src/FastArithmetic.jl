@@ -336,7 +336,7 @@ Compute the isomorphism Φ : k[x,y]/(P,Q) ⟶ k[z]/(R).
 # Argument
 * This time b::Array{T,2} is the same as the one in the text.
 """
-function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y)
+function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y,R::Y)
   k::Nemo.Field=parent(b[1,1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
@@ -348,7 +348,6 @@ function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y)
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
-  R::Y=computeR(P,Q)
   S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
   U::Y=gcdinv(S,R)[2]
 
@@ -406,7 +405,7 @@ Compute Φ^(-1) : k[z]/(R) ⟶ k[x,y]/(P,Q).
 # Output
 * This time b::Array{T,2} is the same as the one in the text.
 """
-function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y)
+function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y)
   k::Nemo.Field=parent(a[1])
   @assert k==base_ring(P)
   K::Nemo.Ring=parent(P)
@@ -417,7 +416,6 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y)
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
-  R::Y=computeR(P,Q)
   S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
   U::Y=gcdinv(S,R)[2]
 

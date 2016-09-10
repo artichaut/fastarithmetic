@@ -194,11 +194,11 @@ function testPhi2()
   b1=fq_nmod[k(2) k(1) k(4); k(3) k(1) k(4)]
   b2=fq_nmod[k(3) k(2) k(3); k(1) k(2) k(0)]
 
-  @test phi2(un,P,Q)==[k(1),k(0),k(0),k(0),k(0),k(0)]
+  @test phi2(un,P,Q,R)==[k(1),k(0),k(0),k(0),k(0),k(0)]
 
-  @test phi2(xy,P,Q)==[k(0),k(1),k(0),k(0),k(0),k(0)]
+  @test phi2(xy,P,Q,R)==[k(0),k(1),k(0),k(0),k(0),k(0)]
 
-  @test phi2(b1+b2,P,Q)==phi2(b1,P,Q)+phi2(b2,P,Q)
+  @test phi2(b1+b2,P,Q,R)==phi2(b1,P,Q,R)+phi2(b2,P,Q,R)
 
   b2p=transpose(copy(b2))
 
@@ -206,9 +206,9 @@ function testPhi2()
     b2p[:,i]=monomialToDual(b2p[:,i],Q)
   end
 
-  @test dualToMonomial(phi1(b2p,P,Q),R)==phi2(b2,P,Q)
+  @test dualToMonomial(phi1(b2p,P,Q,R),R)==phi2(b2,P,Q,R)
 
-  c=inversePhi2(monomialToDual([k(0),k(1),k(0),k(0),k(0),k(0)],R),P,Q)
+  c=inversePhi2(monomialToDual([k(0),k(1),k(0),k(0),k(0),k(0)],R),P,Q,R)
 
   for i in 1:3
     c[:,i]=dualToMonomial(c[:,i],P)
@@ -227,9 +227,9 @@ function testPhi2()
   a1=[k(1),k(3),k(2),k(2),k(0),k(1)]
   a2=[k(3),k(3),k(0),k(4),k(1),k(2)]
 
-  @test inversePhi2(a1+a2,P,Q)==inversePhi2(a1,P,Q)+inversePhi2(a2,P,Q)
+  @test inversePhi2(a1+a2,P,Q,R)==inversePhi2(a1,P,Q,R)+inversePhi2(a2,P,Q,R)
 
-  q=inversePhi2(a1,P,Q)
+  q=inversePhi2(a1,P,Q,R)
 
   for i in 1:3
     q[:,i]=dualToMonomial(q[:,i],P)
@@ -243,9 +243,9 @@ function testPhi2()
 
   q=transpose(q)
 
-  @test monomialToDual(phi2(q,P,Q),computeR(P,Q))==a1
+  @test monomialToDual(phi2(q,P,Q,R),computeR(P,Q))==a1
 
-  aa=inversePhi2(monomialToDual(phi2(b1,P,Q),R),P,Q)
+  aa=inversePhi2(monomialToDual(phi2(b1,P,Q,R),R),P,Q,R)
 
   for i in 1:3
     aa[:,i]=dualToMonomial(aa[:,i],P)
@@ -267,7 +267,7 @@ function testPhi2()
     g[:,i]=monomialToDual(g[:,i],Q)
   end
 
-  @test transpose(g)==inversePhi2(a2,P,Q)
+  @test transpose(g)==inversePhi2(a2,P,Q,R)
 
   println("PASS")
 end
