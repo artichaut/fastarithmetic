@@ -1,0 +1,74 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amssymb,amsthm,amsopn}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+%\usepackage{tikz}
+%\usepackage{array}
+%\usepackage[top=1cm,bottom=1cm]{geometry}
+%\usepackage{listings}
+%\usepackage{xcolor}
+
+% Création des labels Théorème, Lemme, etc...
+
+\newtheoremstyle{break}%
+{}{}%
+{\itshape}{}%
+{\bfseries}{}%  % Note that final punctuation is omitted.
+{\newline}{}
+
+\theoremstyle{break}
+\newtheorem{thm}{Théorème}[section]
+\newtheorem{lm}[thm]{Lemme}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollaire}
+
+\theoremstyle{definition}
+\newtheorem{defi}[thm]{Définition}
+\newtheorem{ex}[thm]{Exemple}
+
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remarque}
+
+% Raccourcis pour les opérateurs mathématiques (les espaces avant-après sont modifiés pour mieux rentrer dans les codes mathématiques usuels)
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Id}{Id}
+\DeclareMathOperator{\Img}{Im}
+\DeclareMathOperator{\Card}{Card}
+\DeclareMathOperator{\Vect}{Vect}
+
+
+% Nouvelles commandes
+\newcommand{\ps}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\ent}[2]{[\![#1,#2]\!]}
+
+% opening
+\title{Internship report}
+\author{Édouard \textsc{Rousseau}\\Internship supervised by Luca \textsc{De Feo}}
+
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+  This internship took place during July and August 2016, the aim was to study the algorithms presented in \cite{DDS14}, and to implement them in Nemo \cite{Nemo}, a computer algebra package for the Julia programming language.
+
+\end{abstract}
+
+\tableofcontents
+
+\clearpage
+
+\section{Here is the first thing}
+blablabal
+
+\clearpage
+\bibliographystyle{unsrt}
+\bibliography{biblio}
+\end{document}
