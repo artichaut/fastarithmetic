@@ -57,7 +57,7 @@
 
 \begin{abstract}
 
-  This internship took place during July and August 2016, the aim was to study the algorithms presented in \cite{DDS14}, and to implement them in Nemo \cite{Nemo}, a computer algebra package for the Julia programming language.
+  This internship took place during July and August 2016, the aim was to study the algorithms presented in \cite{DDS14}, and to implement them in Nemo \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming language. This paper intends to compare the Julia and the C implementations of the code, in terms of speed, but also genericity and easyness to write and read such code.
 
 \end{abstract}
 
@@ -65,8 +65,26 @@
 
 \clearpage
 
-\section{Here is the first thing}
-blablabal
+\section{Julia}
+\subsection{Overview of Julia's caracteristics}
+\subsection{Nemo}
+
+\section{A bit of theory}
+
+\section{Julia/Nemo in practice}
+Julia is a very easy to learn language, I had never seen Julia code before the internship, and I am not an expert in computer science, but the writing part of the code was not the hardest at all. Since it's easy to write, I hope it's also easy to read, if not, I think that it is due to my lack of experience in software programing, rather than to Julia itself. You can find the code at https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really easy to install personal packages too, you just have to clone my repository inside Julia, using
+\begin{verbatim}
+julia> Pkg.clone(``https://github/edouardRousseau/FastArithmetic.jl'') 
+\end{verbatim}
+and you can also test the package easily by running the following.
+\begin{verbatim}
+julia> Pkg.test(``FastArithmetic'') 
+\end{verbatim}
+You may want to update the package, because the code is very suceptible to change, so just use
+\begin{verbatim}
+julia> Pkg.update()
+\end{verbatim}
+and you will be ready to start again. The code written in FastArithmetic.jl is very generic, thanks to the type system of Julia, and works for fields $\mathbb{F}_{p^n}$ with a small $p$ but for large $p$ as well. More importantly, the \emph{jit} compiler creates a function for each type of $p$ (\textbf{fq\_nmod} for $p$ small or \textbf{fq} for $p$ large), so one can write only one function and have two compiled functions : one for each type, which will be optimized by the compiler for this type.
 
 \clearpage
 \bibliographystyle{unsrt}
