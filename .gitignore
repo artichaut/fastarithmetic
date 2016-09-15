@@ -1,3 +1,11 @@
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
+*.bbl
+*.out
+*.blg
+*.toc
+*.pdf
+*.aux
+*.swp
+*.log

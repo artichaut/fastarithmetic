@@ -7,7 +7,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 %\usepackage{tikz}
-%\usepackage{array}
+\usepackage{array}
 %\usepackage[top=1cm,bottom=1cm]{geometry}
 %\usepackage{listings}
 %\usepackage{xcolor}
@@ -33,7 +33,8 @@
 \theoremstyle{remark}
 \newtheorem{rem}[thm]{Remarque}
 
-% Raccourcis pour les opérateurs mathématiques (les espaces avant-après sont modifiés pour mieux rentrer dans les codes mathématiques usuels)
+% Raccourcis pour les opérateurs mathématiques (les espaces avant-après sont
+% modifiés pour mieux rentrer dans les codes mathématiques usuels)
 \DeclareMathOperator{\Ker}{Ker}
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\Img}{Im}
@@ -57,7 +58,12 @@
 
 \begin{abstract}
 
-  This internship took place during July and August 2016, the aim was to study the algorithms presented in \cite{DDS14}, and to implement them in Nemo \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming language. This paper intends to compare the Julia and the C implementations of the code, in terms of speed, but also genericity and easyness to write and read such code.
+  This internship took place during July and August 2016, the aim was to study
+  the algorithms presented in \cite{DDS14}, and to implement them in Nemo
+  \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming
+  language. This paper intends to compare the Julia and the C implementations of
+  the code, in terms of speed, but also genericity and easyness to write and
+  read such code.
 
 \end{abstract}
 
@@ -72,7 +78,14 @@
 \section{A bit of theory}
 
 \section{Julia/Nemo in practice}
-Julia is a very easy to learn language, I had never seen Julia code before the internship, and I am not an expert in computer science, but the writing part of the code was not the hardest at all. Since it's easy to write, I hope it's also easy to read, if not, I think that it is due to my lack of experience in software programing, rather than to Julia itself. You can find the code at https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really easy to install personal packages too, you just have to clone my repository inside Julia, using
+Julia is a very easy to learn language, I had never seen Julia code before the
+internship, and I am not an expert in computer science, but the writing part of
+the code was not the hardest at all. Since it's easy to write, I hope it's also
+easy to read, if not, I think that it is due to my lack of experience in
+software programing, rather than to Julia itself. You can find the code at
+https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really
+easy to install personal packages too, you just have to clone my repository
+inside Julia, using
 \begin{verbatim}
 julia> Pkg.clone(``https://github/edouardRousseau/FastArithmetic.jl'') 
 \end{verbatim}
@@ -84,7 +97,36 @@ You may want to update the package, because the code is very suceptible to chang
 \begin{verbatim}
 julia> Pkg.update()
 \end{verbatim}
-and you will be ready to start again. The code written in FastArithmetic.jl is very generic, thanks to the type system of Julia, and works for fields $\mathbb{F}_{p^n}$ with a small $p$ but for large $p$ as well. More importantly, the \emph{jit} compiler creates a function for each type of $p$ (\textbf{fq\_nmod} for $p$ small or \textbf{fq} for $p$ large), so one can write only one function and have two compiled functions : one for each type, which will be optimized by the compiler for this type.
+and you will be ready to start again. The code written in FastArithmetic.jl is
+very generic, thanks to the type system of Julia, and works for fields
+$\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
+\emph{jit} compiler creates a function for each kind of $p$. Indeed the elements
+of $\mathbb{F}_{p^n}$ have type \textbf{fq\_nmod} for $p$ small or \textbf{fq}
+for $p$ large, so one can write only one function and have two compiled
+functions : one for each type, which will be optimized by the compiler for this
+type. We will now look at the speed of the code in Julia, and compare it with
+the speed in C. In the following, $m$ will be the degree of the polynomial $P$,
+which is a precomputed irreducible polynomial obtained by taking random
+polynomials of degree $m$ in $\mathbb{F}_{p}[X]$. In the arrays, the speed of
+the C code is set to $1.00$, and smaller is better. The speed of of
+\textbf{monomialToDual} and of \textbf{dualToMonomial} are the same, either in C
+or Julia, so we show the results only for the first.
+
+\begin{center}
+  \textbf{monomialToDual}
+
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $5.12$\\
+   $51$ & $1.14$\\
+   $104$ & $0.56$\\
+   $140$ & $0.44$\\
+   $187$ & $0.38$\\
+
+  \end{tabular}
+\end{center}
+
+
 
 \clearpage
 \bibliographystyle{unsrt}
