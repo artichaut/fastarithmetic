@@ -9,3 +9,5 @@
 *.aux
 *.swp
 *.log
+reference
+try.jl

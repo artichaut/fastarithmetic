@@ -103,11 +103,15 @@ $\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
 \emph{jit} compiler creates a function for each kind of $p$. Indeed the elements
 of $\mathbb{F}_{p^n}$ have type \textbf{fq\_nmod} for $p$ small or \textbf{fq}
 for $p$ large, so one can write only one function and have two compiled
-functions : one for each type, which will be optimized by the compiler for this
-type. We will now look at the speed of the code in Julia, and compare it with
-the speed in C. In the following, $m$ will be the degree of the polynomial $P$,
-which is a precomputed irreducible polynomial obtained by taking random
-polynomials of degree $m$ in $\mathbb{F}_{p}[X]$. In the arrays, the speed of
+functions : one for each type, which will be optimized by the compiler for this type.
+
+\subsection{Benchmarks}
+We will now look at the speed of the code in Julia, and compare it with
+the speed in C. All the benchmarks in Julia were realised with the
+@benchmark macro available in the BenchmarkTools package. In the following, $m$
+will be the degree of the polynomial $P$, which is a precomputed irreducible
+polynomial obtained by taking random polynomials of degree $m$ in
+$\mathbb{F}_{p}[X]$. In the arrays, the speed of
 the C code is set to $1.00$, and smaller is better. The speed of of
 \textbf{monomialToDual} and of \textbf{dualToMonomial} are the same, either in C
 or Julia, so we show the results only for the first.
@@ -148,12 +152,8 @@ or Julia, so we show the results only for the first.
    $140$ & $33.87$\\
    $187$ & $30.87$\\
 
-  \end{tabular}
-\end{tabular}
-\end{center}
+  \end{tabular}\\
 
-\begin{center}
-  \begin{tabular}[here]{ccc}
     \textbf{project} & \textbf{phi1} & \textbf{phi2} \\
 
   \begin{tabular}[here]{cc}
