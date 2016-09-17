@@ -113,7 +113,8 @@ the C code is set to $1.00$, and smaller is better. The speed of of
 or Julia, so we show the results only for the first.
 
 \begin{center}
-  \textbf{monomialToDual}
+\begin{tabular}[here]{ccc}
+\textbf{monomialToDual} & \textbf{mulT} & \textbf{embed} \\
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
@@ -124,8 +125,72 @@ or Julia, so we show the results only for the first.
    $187$ & $0.38$\\
 
   \end{tabular}
+
+  &
+  
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $1.15$\\
+   $51$ & $0.08$\\
+   $104$ & $0.03$\\
+   $140$ & $0.02$\\
+   $187$ & $0.01$\\
+
+  \end{tabular}
+
+  &
+
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $31.30$\\
+   $51$ & $37.17$\\
+   $104$ & $35.29$\\
+   $140$ & $33.87$\\
+   $187$ & $30.87$\\
+
+  \end{tabular}
+\end{tabular}
 \end{center}
 
+\begin{center}
+  \begin{tabular}[here]{ccc}
+    \textbf{project} & \textbf{phi1} & \textbf{phi2} \\
+
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $32.77$\\
+   $51$ & $30.64$\\
+   $104$ & $26.64$\\
+   $140$ & $24.24$\\
+   $187$ & $20.64$\\
+
+  \end{tabular}
+
+  &
+ 
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $25.83$\\
+   $51$ & $29.55$\\
+   $104$ & $22.53$\\
+   $140$ & $22.94$\\
+   $187$ & $22.12$\\
+
+  \end{tabular}
+
+  &
+ 
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $2.56$\\
+   $51$ & $102$\\
+   $104$ & $187$\\
+   $140$ & $309$\\
+   $187$ & $449$\\
+
+  \end{tabular}
+\end{tabular}
+\end{center}
 
 
 \clearpage

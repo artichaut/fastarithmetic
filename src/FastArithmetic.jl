@@ -437,7 +437,7 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y)
   end
 
   u::Y=powmod(U,m-1,R)
-  W::Y=mulT(remT(a,R,2*m*n-1),u,m*n-1)
+  W::Y=mulTmid(remT(a,R,2*m*n-1),u,m*n-1)
   a=T[coeff(W,j) for j in 0:(m*n-1)]
 
   V::Array{Array{T,1},1}=Array(Array{T,1},p)
@@ -446,7 +446,7 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y)
 
   for i in 1:p
     V[i]=remT(a,R,m*n+m-1)
-    A=mulT(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
+    A=mulTmid(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
     a=T[coeff(A,j) for j in 0:(m*n-1)]
   end
 
