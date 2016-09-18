@@ -73,18 +73,75 @@
 
 \section{Julia}
 \subsection{Overview of Julia's caracteristics}
+Julia is a free and open-source, high-level programming language developed since 2012, with dynamic
+type system and high-performance. It is a compiled language, with a
+\emph{just-in-time} (jit) compilation. It means that when you write a
+function, e.g. 
+\begin{verbatim}
+julia> function myFunction(n)
+       return n^3+n+2
+       end
+\end{verbatim}
+your function will be compiled during your very first call. After this first
+call, it will be much faster to run the compiled function
+\begin{verbatim}
+julia> myFunction(BigInt(2)^300)
+\end{verbatim}
+than the expression below.
+\begin{verbatim}
+julia> (BigInt(2)^300)^3 + BigInt(2)^300 + 2
+\end{verbatim}
+In order to optimize the code, the compiler creates a new function for each
+type of input that you can think of when calling myFunction. For example, in the
+code 
+below, Julia will compile myFunction three times, which will result in
+three functions, each one of them optimized for \textbf{Int64} (the default type
+of $17$), \textbf{Float64}, or \textbf{BigInt}.
+\begin{verbatim}
+julia> myFunction(17)
+4932
+julia> myFunction(17.)
+4932.0
+julia> myFunction(BigInt(17))
+4932
+\end{verbatim}
+Julia is a very easy-to-learn language, I had never seen Julia code before the 
+internship, and I am not an expert in computer science, but the writing part of
+the code was not the hardest. 
+The code written in FastArithmetic.jl is
+very generic, thanks to the type system of Julia, and works for fields
+$\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
+\emph{jit} compiler creates a function for each kind of $p$. Indeed the elements
+of $\mathbb{F}_{p^n}$ have type \textbf{fq\_nmod} for $p$ small or \textbf{fq}
+for $p$ large, so one can write only one function and have two compiled
+functions : one for each type, which will be optimized by the compiler for this type.
+
 \subsection{Nemo}
+
+Nemo is a computer algebra package of Julia, you can install it with 
+\begin{verbatim}
+julia> using Nemo
+\end{verbatim}
+and test it with the following.
+\begin{verbatim}
+julia> Pkg.test(``Nemo'')
+\end{verbatim}
+Nemo is based on C/C++ libraries such as Flint, Antic, Pari, etc. and is also
+written in Julia. It provides a lot of features, and all the work of this
+internship is based on Nemo. Indeed, we work with Nemo finite fields and Nemo
+polynomials over these fields. \textbf{fq}, \textbf{fq\_nmod}, and
+\textbf{fq\_nmod\_poly} (the type of the polynomials over $\mathbb{F}_{p^n}$) are
+all Nemo types. You can learn more in Nemo's manual, which is very well
+documented.
 
 \section{A bit of theory}
 
 \section{Julia/Nemo in practice}
-Julia is a very easy to learn language, I had never seen Julia code before the
-internship, and I am not an expert in computer science, but the writing part of
-the code was not the hardest at all. Since it's easy to write, I hope it's also
+Since Julia is easy to write, I hope it's also
 easy to read, if not, I think that it is due to my lack of experience in
 software programing, rather than to Julia itself. You can find the code at
 https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really
-easy to install personal packages too, you just have to clone my repository
+easy to install personal packages, you just have to clone my repository
 inside Julia, using
 \begin{verbatim}
 julia> Pkg.clone(``https://github/edouardRousseau/FastArithmetic.jl'') 
@@ -97,18 +154,40 @@ You may want to update the package, because the code is very suceptible to chang
 \begin{verbatim}
 julia> Pkg.update()
 \end{verbatim}
-and you will be ready to start again. The code written in FastArithmetic.jl is
-very generic, thanks to the type system of Julia, and works for fields
-$\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
-\emph{jit} compiler creates a function for each kind of $p$. Indeed the elements
-of $\mathbb{F}_{p^n}$ have type \textbf{fq\_nmod} for $p$ small or \textbf{fq}
-for $p$ large, so one can write only one function and have two compiled
-functions : one for each type, which will be optimized by the compiler for this type.
-
+and you will be ready to start again. 
 \subsection{Benchmarks}
 We will now look at the speed of the code in Julia, and compare it with
 the speed in C. All the benchmarks in Julia were realised with the
-@benchmark macro available in the BenchmarkTools package. In the following, $m$
+@benchmark macro available in the BenchmarkTools package. This macro lets you
+benchmark any function with 
+
+\begin{verbatim}
+julia>@benchmark 1+1
+BenchmarkTools.Trial: 
+  samples:          10000
+  evals/sample:     1000
+  time tolerance:   5.00%
+  memory tolerance: 1.00%
+  memory estimate:  0.00 bytes
+  allocs estimate:  0
+  minimum time:     3.00 ns (0.00% GC)
+  median time:      3.00 ns (0.00% GC)
+  mean time:        3.04 ns (0.00% GC)
+  maximum time:     10.00 ns (0.00% GC)
+\end{verbatim}
+which runs the desired function and measures the time it takes. It's possible
+to choose all the parameters of the benchmark and you can use different
+estimators. For the following benchmarks, we use the median time, because it
+is more stable than the mean time and still give an idea of the average time
+the function will take. The stability we are talking about is linked with the
+memory management in Julia. Indeed, in Julia, we don't have to concern about
+memory, and the variables we assign are cleared by the Garbage Collector
+(GC). The time Julia pass in the GC is not very clear nor predictible, and the
+operations in the GC take a significant time. That's why the time taken by a
+function can change between two samples, depending on the time spent in the GC.
+By default, before every benchmark, the garbage if automaticaly collected, but
+there is still a bit of unstabiliy.
+In the following, $m$
 will be the degree of the polynomial $P$, which is a precomputed irreducible
 polynomial obtained by taking random polynomials of degree $m$ in
 $\mathbb{F}_{p}[X]$. In the arrays, the speed of
