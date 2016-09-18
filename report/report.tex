@@ -35,11 +35,13 @@
 
 % Raccourcis pour les opérateurs mathématiques (les espaces avant-après sont
 % modifiés pour mieux rentrer dans les codes mathématiques usuels)
+% \deg already exists !!
 \DeclareMathOperator{\Ker}{Ker}
 \DeclareMathOperator{\Id}{Id}
 \DeclareMathOperator{\Img}{Im}
 \DeclareMathOperator{\Card}{Card}
 \DeclareMathOperator{\Vect}{Vect}
+
 
 
 % Nouvelles commandes
@@ -137,9 +139,10 @@ documented.
 \section{A bit of theory}
 
 \section{Julia/Nemo in practice}
-Since Julia is easy to write, I hope it's also
-easy to read, if not, I think that it is due to my lack of experience in
-software programing, rather than to Julia itself. You can find the code at
+Since Julia is easy-to-write, I hope it's also
+easy-to-read, if not, I think that it is due to my lack of experience in
+software programing, rather than to Julia itself. You can find the code
+at
 https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really
 easy to install personal packages, you just have to clone my repository
 inside Julia, using
@@ -187,11 +190,16 @@ operations in the GC take a significant time. That's why the time taken by a
 function can change between two samples, depending on the time spent in the GC.
 By default, before every benchmark, the garbage if automaticaly collected, but
 there is still a bit of unstabiliy.
-In the following, $m$
-will be the degree of the polynomial $P$, which is a precomputed irreducible
-polynomial obtained by taking random polynomials of degree $m$ in
-$\mathbb{F}_{p}[X]$. In the arrays, the speed of
-the C code is set to $1.00$, and smaller is better. The speed of of
+Since all the functions written in FastArithmetic.jl depends on at least one
+polynomial $P$, sometimes also $Q$ and $R=P\odot Q$, we let $m=\deg (P)$ grow
+from $1$ to $200$ and benchmark the functions for all these values of $m$. We
+choose $\deg (Q)=m+1$, and both $P$ and $Q$ are irreducible polynomials.
+Irreducible polynomials of degree $1$ to $201$ were precomputed, by chosing
+random elements in $\mathbb{F}_{p}[X]$, in order to
+always use the same list and to be sure that we are not using special
+polynomials that could be speeding up the functions (like sparse
+polynomials). In the arrays, the speed of
+the C code is set to $1.00$, and smaller is better. The speed of 
 \textbf{monomialToDual} and of \textbf{dualToMonomial} are the same, either in C
 or Julia, so we show the results only for the first.
 
