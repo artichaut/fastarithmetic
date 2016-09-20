@@ -100,12 +100,12 @@ export mulTmid
 The tranposition of the algorithm of multiplication by P. Using middle product.
 
 # Arguments
-* c::Array{T,1} must have length m (degree of P) + n.
+* c::Array{T,1} must have length m (degree of P) + n + 1 since it represents a polynomial
+  in R_{n+m}[X].
 
 # Remark
 * the middle product formula is in [1]
-* I don't really see why n is an argument, since we could obtain it by
-computing n = length(c) - degree(P).
+* mulTmid(⋅,P,n) : R_{n+m}[X] ⟶ R_n[X]
 
 # References
 * [1] : G. Hanrot, M. Quercia, and P. Zimmerman. The middle product algorithm I.
@@ -169,15 +169,34 @@ function remTnaif{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   return b
 end
 
+export mulModT
+
+"""
+    mulModT{T}(P::Array{T,1},Q::PolyElem{T},R::PolyElem{T},n::Int64)
+
+Transposition of the modular multiplication.
+
+# Arguments
+* P::Array{T,1} represents a polynomial of degree r - 1, so is of size r (where r=deg(R)) ;
+* Q::PolyElem{T} is the fixed polynomial used in mul(⋅,Q) : P ⟼ PQ ;
+* R::PolyElem{T} is the polynomial used in the remainder rem(⋅,R) : P ⟼ P mod R ;
+* n::Int64 is the degree of the output (at most).
+
+# Remark
+* mulModT(⋅,Q,R,n) : R_{r-1}[X] ⟶ R_n[X].
+"""
+function mulModT{T}(P::Array{T,1},Q::PolyElem{T},R::PolyElem{T},n::Int64)
+  q,r=degree(Q),degree(R)
+  a = remT(P,R,n+q+1)
+  return mulTmid(a,Q,n)
+end
+
 export embed
 
 """
     embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
 
 Compute the embeding of Π={bc | b ∈ k[x]/(P) , c ∈ k[y]/(Q)} ⊂ k[x,y]/(P,Q) in k[z]/(R).
-
-# Correctness
-* The algorithm is linear
 """
 function embed{T}(b::Array{T,1},P::PolyElem{T},c::Array{T,1},Q::PolyElem{T},r::Int64=0)
   if r==0
@@ -224,10 +243,6 @@ export computeR
     computeR{T}(P::PolyElem{T},Q::PolyElem{T})
 
 Compute the composed product R of P and Q.
-
-# Correctness
-* R is irreducible
-
 """
 function computeR{T}(P::PolyElem{T},Q::PolyElem{T})
   m::Int64=degree(P)
@@ -248,7 +263,6 @@ export project
     project{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
 
 Compute the section of the embedding k[x]/(P) ⟶ k[z]/(R), where R = P ⊙ Q.
-
 """
 function project{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   n::Int64=degree(Q)
