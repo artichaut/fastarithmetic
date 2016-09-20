@@ -193,3 +193,29 @@ function benchPhi2()
     writedlm("phi2.txt",A)
   end
 end
+
+function benchMulmod()
+  k,u=FiniteField(5,1,"u")
+  K,t=PolynomialRing(k,"t")
+  A=Array(Float64,(200,2))
+  for j in 1:200
+    println(j)
+    P,Q,R=createPol(j,K),createPol(j,K),createPol(j,K)
+    b = @benchmark mulmod($P,$Q,$R)
+    A[j,1],A[j,2]=j,median(b).time/10^9
+    writedlm("mulmod.txt",A)
+  end
+end
+
+function benchMulModT()
+  k,u=FiniteField(5,1,"u")
+  K,t=PolynomialRing(k,"t")
+  A=Array(Float64,(200,2))
+  for j in 1:200
+    println(j)
+    P,Q,R=createPol(j,K),createPol(j,K),createPol(j,K)
+    b = @benchmark mulModT($P,$Q,$R,$j)
+    A[j,1],A[j,2]=j,median(b).time/10^9
+    writedlm("mulmodT.txt",A)
+  end
+end
