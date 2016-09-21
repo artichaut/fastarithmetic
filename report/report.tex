@@ -138,6 +138,12 @@ documented.
 
 \section{A bit of theory}
 \subsection{General background}
+In most of the computer algebra system, like Sage, Magma, Flint, etc., it is possible to work with finite
+fields and their algebraic closure. But the algorithms used to deal with this
+last object often rely on linear algebra, and the cost is at least quadratic in
+the degree of the extension you are dealing with. The algorithms presented in
+\cite{DDS14} rely on polynomial arithmetic, and have a quasi-linear cost for most of the algorithms needed to
+compute in the algebraic closure of a finite field.
 \subsection{Trace and duality}
 \subsection{Transposition principle}
 
@@ -207,8 +213,22 @@ the C code is set to $1.00$, and smaller is better. The speed of
 or Julia, so we show the results only for the first.
 
 \begin{center}
+  \begin{tabular}[here]{c}
+    \textbf{mulmod} \\
+    \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $5.12$\\
+   $51$ & $1.14$\\
+   $104$ & $0.56$\\
+   $140$ & $0.44$\\
+   $187$ & $0.038$\\
+    \end{tabular}
+  \end{tabular}
+\end{center}
+
+\begin{center}
 \begin{tabular}[here]{ccc}
-\textbf{monomialToDual} & \textbf{mulT} & \textbf{embed} \\
+\textbf{monomialToDual} & \textbf{mulModT} & \textbf{embed} \\
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
@@ -224,11 +244,11 @@ or Julia, so we show the results only for the first.
   
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $1.15$\\
-   $51$ & $0.08$\\
-   $104$ & $0.03$\\
-   $140$ & $0.02$\\
-   $187$ & $0.01$\\
+   $10$ & $10,00$\\
+   $51$ & $1.55$\\
+   $104$ & $0.83$\\
+   $140$ & $0.71$\\
+   $187$ & $0.58$\\
 
   \end{tabular}
 
