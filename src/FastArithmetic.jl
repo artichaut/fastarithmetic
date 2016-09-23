@@ -460,7 +460,7 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y)
 
   for i in 1:p
     V[i]=remT(a,R,m*n+m-1)
-    A=mulTmid(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1)
+    A=mulTmid(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1) # That's the thing taking time !!!
     a=T[coeff(A,j) for j in 0:(m*n-1)]
   end
 

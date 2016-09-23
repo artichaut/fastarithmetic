@@ -143,7 +143,14 @@ fields and their algebraic closure. But the algorithms used to deal with this
 last object often rely on linear algebra, and the cost is at least quadratic in
 the degree of the extension you are dealing with. The algorithms presented in
 \cite{DDS14} rely on polynomial arithmetic, and have a quasi-linear cost for most of the algorithms needed to
-compute in the algebraic closure of a finite field.
+compute in the algebraic closure of a finite field. In this section, we will
+introduce (briefly) the tools used in the algorithms, and explain how it works.
+The most important result is the \emph{transposition principle}, which is an
+algorithmic proposition that guarantees that if you have a linear algorithm
+performing a matrix-vector product $v\mapsto Mv$, you can \emph{tranpose} it to
+obtain an algorithm, which has essentialy the same cost, performing the transposed matrix-vector product $v\mapsto
+M^tv$. But we first need to talk about \emph{duality}, because the transposition
+principle also change the base you are working with.
 \subsection{Trace and duality}
 \subsection{Transposition principle}
 
@@ -217,11 +224,11 @@ or Julia, so we show the results only for the first.
     \textbf{mulmod} \\
     \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $5.12$\\
-   $51$ & $1.14$\\
-   $104$ & $0.56$\\
-   $140$ & $0.44$\\
-   $187$ & $0.038$\\
+   $10$ & $15.47$\\
+   $51$ & $12.84$\\
+   $104$ & $17.04$\\
+   $140$ & $16.43$\\
+   $187$ & $14.78$\\
     \end{tabular}
   \end{tabular}
 \end{center}
@@ -244,11 +251,11 @@ or Julia, so we show the results only for the first.
   
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $10,00$\\
-   $51$ & $1.55$\\
-   $104$ & $0.83$\\
-   $140$ & $0.71$\\
-   $187$ & $0.58$\\
+   $10$ & $286$\\
+   $51$ & $2.6\times 10^3$\\
+   $104$ & $6.8\times 10^3$\\
+   $140$ & $1.17\times 10^4$\\
+   $187$ & $2\times 10^4$\\
 
   \end{tabular}
 
