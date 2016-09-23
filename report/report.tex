@@ -11,6 +11,8 @@
 %\usepackage[top=1cm,bottom=1cm]{geometry}
 %\usepackage{listings}
 %\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{bbm}
 
 % Création des labels Théorème, Lemme, etc...
 
@@ -42,10 +44,12 @@
 \DeclareMathOperator{\Card}{Card}
 \DeclareMathOperator{\Vect}{Vect}
 
-
+\DeclareBoldMathCommand{\bxi}{\xi}
+\DeclareBoldMathCommand{\bupsilon}{\upsilon}
+\DeclareBoldMathCommand{\bzeta}{\zeta}
 
 % Nouvelles commandes
-\newcommand{\ps}[2]{\left\langle#1,#2\right\rangle}
+\newcommand{\ps}[2]{\langle#1,#2\rangle}
 \newcommand{\ent}[2]{[\![#1,#2]\!]}
 
 % opening
@@ -152,8 +156,50 @@ obtain an algorithm, which has essentialy the same cost, performing the transpos
 M^tv$. But we first need to talk about \emph{duality}, because the transposition
 principle also change the base you are working with.
 \subsection{Trace and duality}
-\subsection{Transposition principle}
+Let $k$ be a finite field, and  $E,F$ be two $k$-vector spaces with the same
+finite dimension $\dim E = \dim F < \infty$. Let also
+$\ps{\cdot}{\cdot}:E\times F\rightarrow k$ be a non-degenerate bilinear form. Then,
+for any basis $\bxi=(\xi_i)_i$ of $E$, their exists a unique basis
+$\bxi^*=(\xi_j^*)_j$ of $F$
+such that $\forall (i,j),\ps{\xi_i}{\xi_j^*}=\delta_{i,j}$ where $\delta_{i,j}$ is
+the \textsc{Kronecker} symbol and $\delta_{i,j}=1$ if $i=j$ and 0 otherwise.
+The base $\bxi^*$ is called the \emph{dual basis} of $\bxi$.
+Equally, let $E',F'$ be two other $k$-vector spaces with $\dim E' = \dim F' <
+\infty$ and $\ps{\cdot}{\cdot}':E'\times F'\rightarrow k$ an other non-degenerate
+bilinear form. Then, for any linear map $u:E\rightarrow E'$, there exists a
+unique map $u^t:F'\rightarrow F$ such that $\forall (a,b)\in E\times
+F',\ps{u(a)}{b}'=\ps{a}{u^t(b)}$. This map is called the \emph{dual} map of $u$,
+with respect to $\ps{\cdot}{\cdot}$ and $\ps{\cdot}{\cdot}'$.
 
+It's now time to speak about the \emph{trace form}, it will be our candidate to be 
+$\ps{\cdot}{\cdot}$, the non-degenerate bilinear form. Let $P$ be an irreducible
+polynomial of $k[X]$, $K=k[X]/(P)$ be a finite
+extension of $k$, and $a\in K$. We denote by $\mu_a$ the application of
+multiplication-by-a, $\mu_a:K\rightarrow K, x\mapsto ax$. $K$ is a $k$-vector
+space and $\mu_a$ is an endomorphism of $K$. But, for all $a,b\in K$, we also denote $\tau_P(ab)$ to be the trace of the endomorphism $\mu_{ab}$, and we define
+$\ps{a}{b}_P=\tau_P(ab)$. This defines a non-degenerate bilinear form on $K\times
+K$. Thus, if $\bxi$ is a basis of $K$, one can obtain a dual basis $\bxi^*$ with
+respect to the bilinear form $\ps{\cdot}{\cdot}_P$. Hence, if $a\in K$ has the
+coordinates $(a_i)_i$ in the basis $\bxi^*$, these coordinates are given by
+$a_i=\ps{\xi_i}{a}$, so $a=\sum a_i\xi_i^*=\sum\ps{\xi_i}{a}\xi_i^*$. This
+formula will be important for the change-of-basis algorithms.
+
+\subsection{Transposition principle}
+Let, as in the previous section, $\bxi$ be a basis of $E$, and $\bxi^*$ the
+basis of $F$ which is dual to $\bxi$. Let also $\bupsilon$ and $\bupsilon^*$ be a
+basis of $E'$ and its dual basis of $F'$. If $M$ is the matrix of $u$ in the
+bases $(\bxi,\bupsilon)$, then the matrix of $u^t$ in the bases
+$(\bupsilon^*,\bxi^*)$ is $M^t$. Given an algorithm to compute a linear map
+$u:E\rightarrow E'$ in the bases $(\bxi,\bupsilon)$, the transposition principle
+enable one to compute the dual map $u^t:F'\rightarrow F$ in the bases
+$(\bupsilon^*,\bxi^*)$. The costs of the two algorithms only differ by a
+constant. Roughly speaking, transposing an algorithm consist on transposing all
+the subroutines and inverse their orders.
+\begin{center}
+  Maybe place here a tabular with drawing \& algorithmic result in both
+  transposed and non-transposed mode. 
+\end{center}
+\subsection{The algorithms}
 \section{Julia/Nemo in practice}
 Since Julia is easy-to-write, I hope it's also
 easy-to-read, if not, I think that it is due to my lack of experience in
