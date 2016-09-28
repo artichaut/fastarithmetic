@@ -3,8 +3,6 @@
 % 
 % * drawing for the transposition principle
 % * explainations of the transposition principle with examples (rev, rem etc.)
-% * re-think the traces introduction to fit with bivariate conversions
-% * explain R = P(*)Q also 
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -14,7 +12,7 @@
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb,amsthm,amsopn}
 \usepackage{mathrsfs}
-%\usepackage{stmaryrd} % to get <--| \mapsfrom
+\usepackage{stmaryrd} % to get <--| \mapsfrom
 \usepackage{graphicx}
 \usepackage{hyperref}
 %\usepackage{tikz}
@@ -44,7 +42,7 @@
 \newtheorem{ex}[thm]{Exemple}
 
 \theoremstyle{remark}
-\newtheorem{rem}[thm]{Remarque}
+%\newtheorem{rem}[thm]{Remarque}
 
 % Raccourcis pour les opérateurs mathématiques (les espaces avant-après sont
 % modifiés pour mieux rentrer dans les codes mathématiques usuels)
@@ -55,6 +53,7 @@
 \DeclareMathOperator{\Card}{Card}
 \DeclareMathOperator{\Vect}{Vect}
 \DeclareMathOperator{\rev}{rev}
+\DeclareMathOperator{\rem}{rem}
 
 \DeclareBoldMathCommand{\bxi}{\xi}
 \DeclareBoldMathCommand{\bupsilon}{\upsilon}
@@ -64,6 +63,7 @@
 \newcommand{\ps}[2]{\langle#1,#2\rangle}
 \newcommand{\ent}[2]{[\![#1,#2]\!]}
 \newcommand{\psdot}{\ps{\cdot}{\cdot}}
+\newcommand{\remt}{\rem^t}
 
 % opening
 \title{Internship report}
@@ -250,8 +250,8 @@ and an isomorphism $\Phi$ of the form :
 \begin{array}{ccccc}
   &\varphi_x: & k[x]/(P) & \mapsto & k[z]/(R)\\[2mm]
   & \varphi_y: & k[y]/(Q) & \mapsto & k[z]/(R)\\[2mm]
-  \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \mapsto & k[z]/(R).
-%  & &  xy & \mapsfrom & z.
+  \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \mapsto & k[z]/(R) \\
+  & &  xy & \mapsfrom & z.
 \end{array}
 \]
 We will provide algorithms for $\varphi_x$, $\varphi_y$ and $\Phi$ in section
@@ -277,6 +277,9 @@ the subroutines and inverse their orders.
 \end{center}
 \subsection{The algorithms}
 \label{sec-algo}
+All the algorithms described here, and their complexity analysis, have been
+discussed in \cite{DDS14}, that's why we won't show all the pseudo-codes but
+rather try to explain howkthey work and on which result they are based.
 As we saw in the previous section, transposing an algorithm result in a change
 of basis. Thus, it is important to be able to go from a basis to another. Here
 again, $k$ is a finite field and, $P$ an irreducible monic polynomial of $k[x]$, 
@@ -285,7 +288,7 @@ $K=k[x]/(P)$ is a finite extension of $k$. We will be considering two bases of
 $K$ : the monomial basis $\bxi=(x^i)_{0\leq i \leq m-1}$ (where $m$ is the
 degree of $P$), and its dual basis $\bxi^*$ with respect to $\psdot_P$.
 
-\paragraph{MonomialToDual and DualToMonomial.}The two
+\paragraph{Change of basis.}The two
 first algorithms allow us to juggle the monomial and the dual basis. They are
 both based on a lemma which describe the generating series of the traces
 $\tau_P(ax^i)_{0\leq i \leq m-1}$, where $a\in K$. 
@@ -307,7 +310,19 @@ Since we said that
 $(\tau_P(ax^i))_{0\leq i \leq m-1}$ are the coordinates of $a$ in the dual basis
 $\bxi^*$, taking the coefficient of the polynomial
 $\sum_{i=0}^{m-1}\tau_P(ax^i)x^i$ gives a solution to fo from the monomial basis
-to the dual basis.
+to the dual basis, that can be written as follows.
+\newline
+
+\textbf{MonomialToDual}(a, P)\\
+\textbf{Input} $\textbf{a}=(a_i)_{0\leq i\leq m-1}\in k^m$, $P$ an irreducible
+monic polynomial of degree $m$.\\
+\textbf{Output} $(\tau_P(ax^i))_{0\leq i \leq m-1}$, with $a=\sum_{0\leq i
+\leq m-1}a_ix^i$
+\begin{enumerate}
+  \item $T=1/\rev(P,m+1) \mod x^m$
+  \item $b=\rev(P'a=\sum_{0\leq i\leq m-1}a_ix^i \mod P,m)T\mod x^m$
+  \item \textbf{return} (coefficient($b,x^i))_{0\leq i \leq m-1}$
+\end{enumerate}
 
 Obtaining the coefficients in the monomial basis $\bxi$
 knowing the coefficients in the dual basis $\bxi^*$ is done using the same
@@ -321,10 +336,74 @@ lemma \ref{lm-basis} again :
 Then, applying $\rev(\cdot,m)$ and multiplying by $(P')^{-1}\mod P$ gives $a\mod
 P$, so taking the coefficients of $a$ gives the coefficients in the monomial
 basis $\bxi$.
+\newline
+
+\textbf{DualToMonomial}(b, P)\\
+\textbf{Input} $\textbf{b}=(b_i)_{0\leq i\leq m-1}\in k^m$, $P$ an irreducible
+monic polynomial of degree $m$.\\
+\textbf{Output} $(a_i)_{0\leq i \leq m-1}$ such that
+$\tau_P(\sum_{0\leq i \leq m-1}ax^{i+j})=b_j$ for all $j$
+\begin{enumerate}
+  \item $S=1/P \mod P$
+  \item $b=\rev(P,m+1)\sum_{0\leq i\leq m-1}b_ix^i\mod x^m$
+  \item $c=\rev(b,m)$
+  \item $d=cS \mod P$
+  \item \textbf{return} (coefficient($d,x^i))_{0\leq i \leq m-1}$
+\end{enumerate}
 
 As we see, even if the lemma holds in $k[[x]]$, we just need to work $\mod x^m$
 so the inverses can be obtained with fast algorithms for \textsc{Euclide}
 division.
+
+\paragraph{Embedding and computing R.} Let $Q$ be an irreducible monic
+polynomial of $k[y]$ of degree $n$, with $n$ coprime to $m$. Let also $R=P\odot
+Q$ be the composed product of $P$ and $Q$. We have the extensions $k[x]/(P)$,
+$k[y]/(Q)$, $k[x,y]/(P,Q)$, and $k[z]/(R)$ which respectively have the traces
+$\tau_P$, $\tau_Q$, $\tau_{P,Q}$, $\tau_R$ and the associated bilinear forms.
+These extensions are respectively endowed with the monomial bases $\bxi$,
+$\bupsilon$, $\bxi\otimes\bupsilon$ and $\bzeta$. Finally, we denote by
+$\bxi^*$, $\bupsilon^*$ and $\bzeta^*$ the dual basis of $\bxi$, $\bupsilon$ and
+$\bzeta$ with respect to $\psdot_P$, $\psdot_Q$ and $\psdot_R$. In this paragraph, we will
+give algorithms to compute the embeddings $\varphi_x$, $\varphi_y$, their
+sections, and to compute the polynomial $R$. The algorithms follow from the next
+lemma :
+\begin{lm}
+  \label{lm-trac}
+  Let $b$ be in $k[x]/(P)$ and $c$ in $k[y]/(Q)$. Then we have
+  $\tau_R(\Phi(bc))=\tau_{P,Q}(bc)=\tau_P(b)\tau_Q(c)$.
+\end{lm}
+This lemma will permit us to compute the restriction of $\Phi$ to the set 
+\[
+  \Pi=\left\{ bc \;|\; b\in k[x]/(P), c\in k[y]/(Q) \right\}\subset
+  k[x,y]/(P,Q).
+\]
+Indeed, if we have the coordinates $(\tau_P(bx^i))$ and $(\tau_Q(cy^j))$ of $b$ and
+$c$ in the dual bases, we can extend them up to $mn-1$ using $\remt$, then, by lemma $\ref{lm-trac}$, we have
+$(\tau_P(bx^i)\tau_Q(cy^i))_{0\leq i \leq mn-1}=(\tau_R(\Phi(bc)z^i))_{0\leq i
+\leq mn-1}$ which gives us the coordinates of $\Phi(bc)$ in the dual basis
+$\bzeta^*$. So we can obtain $\varphi_x$ and $\varphi_y$ by applying the last
+formula with respectively $c=1$ and $b=1$. This can be written as follows.
+\newline
+
+\textbf{Embed}(b, c, r)\\
+\textbf{Input} $\textbf{b}=(b_i)_{0\leq i\leq m-1}\in k^m$,
+$\textbf{c}=(c_i)_{0\leq i\leq n-1}\in k^n$, an optional integer $r\geq mn$ set
+to $r=mn$ by defaut\\
+\textbf{Output} $\textbf{a}=(a_i)_{0\leq i\leq r-1}\in k^r$
+\begin{enumerate}
+  \item $(t_i)_{0\leq i \leq r-1}=\remt(\textbf{b},P,r)$
+  \item $(u_i)_{0\leq i \leq r-1}=\remt(\textbf{c},P,r)$
+  \item \textbf{return} $(t_iu_i)_{0\leq i \leq r-1}$
+\end{enumerate}
+If $u_P$ is the vector of the coordinates of $1\in k[x]/(P)$ in the dual basis
+$\bxi^*$ and $u_Q$ the vector define similarly, we can compute
+$\varphi_x=\textbf{Embed}(\cdot,u_Q)$ and $\varphi_y=\textbf{Embed}(u_P,\cdot)$.
+Since $R$ is the minimal polynomial of the sequence
+$(\tau_R(z^i))=\textbf{Embed}(u_P,u_Q)$, we can obtain $R$ by computing the
+\textsc{Berlekamp-Massey} algorithm (which compute minimal polynomials of linear
+sequences).
+
+<++>
 
 \section{Julia/Nemo in practice}
 Since Julia is easy-to-write, I hope it's also
