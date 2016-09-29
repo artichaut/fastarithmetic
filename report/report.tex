@@ -248,9 +248,9 @@ roots are the products $p_iq_j$. So we have embeddings $\varphi_x$, $\varphi_y$
 and an isomorphism $\Phi$ of the form :
 \[
 \begin{array}{ccccc}
-  &\varphi_x: & k[x]/(P) & \mapsto & k[z]/(R)\\[2mm]
-  & \varphi_y: & k[y]/(Q) & \mapsto & k[z]/(R)\\[2mm]
-  \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \mapsto & k[z]/(R) \\
+  &\varphi_x: & k[x]/(P) & \to & k[z]/(R)\\[2mm]
+  & \varphi_y: & k[y]/(Q) & \to & k[z]/(R)\\[2mm]
+  \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \to & k[z]/(R) \\
   & &  xy & \mapsfrom & z.
 \end{array}
 \]
@@ -403,7 +403,48 @@ $(\tau_R(z^i))=\textbf{Embed}(u_P,u_Q)$, we can obtain $R$ by computing the
 \textsc{Berlekamp-Massey} algorithm (which compute minimal polynomials of linear
 sequences).
 
-<++>
+As we have just seen, the theory of duality gives us a very simple algorithm for
+\textbf{Embed}, but together with the transposition principle, it will also
+prove usefull to find algorithms for the section of $\varphi_x$, and, as we will
+see later, for $\Phi^{-1}$. Let $c\in k[y]/(Q)$ such that $\tau_Q(c)=1$ (for
+example $c=\upsilon^*_0$ is convenient), $\varepsilon:k[x]/(P)\to k[z]/(R),
+b\mapsto \Phi(bc)$, and $\varepsilon^t:k[z]/(R)\to k[x](P)$ its dual map with
+respect to $\psdot_P$ and $\psdot_R$. Then, for any $b$, $b'$ in $k[x]/(P)$, we
+have
+\[
+\begin{array}{rcl}
+  \ps{b}{b'}_P &=& \tau_P(bb') = \tau_P(bb')\tau_Q(c) = \tau_R(\Phi(bb'c))\\
+  &=& \ps{\varepsilon(b)}{\Phi(b')}_R = \ps{b}{\varepsilon^t(\Phi(b'))}_P.
+\end{array}
+\]
+Since $\psdot_P$ is non-degenerate, this means that 
+$b'=\varepsilon^t(\Phi(b'))=\varepsilon^t(\varphi_x(b'))$ for all $b'\in 
+k[x]/(P)$. In other words, $\varepsilon^t$ is an inverse of $\varphi_x$ on its 
+image, also called a section of $\varphi_x$. Remarking that $\varepsilon$ is 
+nothing else that $\textbf{Embed}(\cdot,c)$, where $c=(1,0,\dots,0)$, we have 
+an algorithm for $\varepsilon$, and, by transposing this algorithm, we have an 
+algorithm for $\varepsilon^t$, which is the section of $\varphi_x$ we were 
+searching.
+
+\paragraph{Isomorphim.} We will apply the same kind of strategy to deduce an 
+algorithm for $\Phi^{-1}$ from an algorithm for $\Phi$. First, recall that 
+$\bxi\otimes\bupsilon$, $\bxi^*\otimes\bupsilon^*$, $\bxi^*\otimes\bupsilon$ 
+and $\bxi\otimes\bupsilon^*$ are all bases of $k[x,y]/(P,Q)$ and that the 
+second is dual to the first and the third to the fourth, with respect to 
+$\psdot_{P,Q}$. Let $\Phi^t$ be the dual map to $\Phi$ with respect to 
+$\psdot_{P,Q}$ and $\psdot_R$. For any $b$ and $b'$ in $k[x,y]/(P,Q)$, we have
+\[
+\begin{array}[here]{rcl}
+  \ps{b}{b'}_{P,Q} &=& \tau_{P,Q}(bb') = \tau_R(\Phi(bb')) \\
+  &=& \ps{\Phi(b)}{\Phi(b')}_R = \ps{b}{\Phi^t(\Phi(b'))}_{P,Q}.
+\end{array}
+\]
+So, here again, thanks to the non-degeneracy of $\psdot_{P,Q}$, we have 
+$\Phi^t=\Phi^{-1}$. Hence, if we have an algorithm computing $\Phi$ in  
+some bases $\textbf{a}$ and $\textbf{b}$, we can deduce, using the 
+transposition principle, an algorithm computing $\Phi^{-1}$ in the dual bases 
+$\textbf{b}^*$ and $\textbf{a}^*$.
+
 
 \section{Julia/Nemo in practice}
 Since Julia is easy-to-write, I hope it's also
