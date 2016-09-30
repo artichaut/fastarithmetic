@@ -426,7 +426,7 @@ an algorithm for $\varepsilon$, and, by transposing this algorithm, we have an
 algorithm for $\varepsilon^t$, which is the section of $\varphi_x$ we were 
 searching.
 
-\paragraph{Isomorphim.} We will apply the same kind of strategy to deduce an 
+\paragraph{Isomorphism.} We will apply the same kind of strategy to deduce an 
 algorithm for $\Phi^{-1}$ from an algorithm for $\Phi$. First, recall that 
 $\bxi\otimes\bupsilon$, $\bxi^*\otimes\bupsilon^*$, $\bxi^*\otimes\bupsilon$ 
 and $\bxi\otimes\bupsilon^*$ are all bases of $k[x,y]/(P,Q)$ and that the 
@@ -443,7 +443,24 @@ So, here again, thanks to the non-degeneracy of $\psdot_{P,Q}$, we have
 $\Phi^t=\Phi^{-1}$. Hence, if we have an algorithm computing $\Phi$ in  
 some bases $\textbf{a}$ and $\textbf{b}$, we can deduce, using the 
 transposition principle, an algorithm computing $\Phi^{-1}$ in the dual bases 
-$\textbf{b}^*$ and $\textbf{a}^*$.
+$\textbf{b}^*$ and $\textbf{a}^*$. We have two algorithms for computing $\Phi$, 
+the first is better in cases where $m$ is small compared to $n$, and use the 
+linearity of $\Phi$ and the work we already done. The idea is to express $b\in 
+k[x,y]/(P,Q)$ in the form $b=\sum_i^{m-1}b_ix^i$ with $b_i\in k[y]/(Q)$ for all 
+$0\leq i \leq m-1$. Since the $b_ix^i$ are all in $\Pi$, we can apply 
+\textbf{Embed} and sum the result to obtain $\Phi(b)=\sum_i^{m-1}\Phi(b_ix^i)$. 
+To apply this strategy, the $b_i$ must be expressed in the dual base 
+$\bupsilon^*$ of $k[y]/(Q)$, because \textbf{Embed} takes its input in the dual 
+bases. In the end, exploiting the fact that the coordinates of the $x^i$ in the 
+dual basis $\bxi^*$ are $(\tau_P(x^{i+j}))_{0\leq j\leq m-1}$ ($u_P$ shifted 
+$i$ times), we have an algorithm to compute $\Phi$ in the basis 
+$\bxi\otimes\bupsilon^*$ and giving the result in the basis $\bzeta^*$. As we 
+noticed, transposing this algorithm will create a new algorithm computing 
+$\Phi^{-1}$ and expressed in the bases $\bzeta$ and $\bxi^*\otimes\bupsilon$.
+
+The second way of computing $\Phi$ does not depend on previous algorithms, but 
+we will still be able to deduce an algorithm for $\Phi^{-1}$ from it using the 
+transposition principle.
 
 
 \section{Julia/Nemo in practice}
