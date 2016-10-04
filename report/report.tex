@@ -1,10 +1,11 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % # TO DO LIST
 % 
-% * drawing for the transposition principle
-% * explainations of the transposition principle with examples (rev, rem etc.)
+% * read again and put all the citations needed when something is stated 
+%   without demonstration (a lot of times...)
+% * find a reference for the duality theory (other that Bourbaki ?)
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[a4paper,11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -12,10 +13,10 @@
 \usepackage[english]{babel}
 \usepackage{amsmath,amssymb,amsthm,amsopn}
 \usepackage{mathrsfs}
-\usepackage{stmaryrd} % to get <--| \mapsfrom
+%\usepackage{stmaryrd} % to get <--| \mapsfrom
 \usepackage{graphicx}
 \usepackage{hyperref}
-%\usepackage{tikz}
+\usepackage{tikz}
 \usepackage{array}
 %\usepackage[top=1cm,bottom=1cm]{geometry}
 %\usepackage{listings}
@@ -70,6 +71,9 @@
 \author{Édouard \textsc{Rousseau}\\Internship supervised by Luca \textsc{De 
 Feo}}
 
+\usepackage{tikz-cd}
+\usetikzlibrary{matrix, calc, arrows}
+
 
 
 \begin{document}
@@ -79,7 +83,7 @@ Feo}}
 \begin{abstract}
 
   This internship took place during July and August 2016, the aim was to study
-  the algorithms presented in \cite{DDS14}, and to implement them in Nemo
+  the algorithms presented in \cite{DeDoSc14}, and to implement them in Nemo
   \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming
   language. This paper intends to compare the Julia and the C implementations of
   the code, in terms of speed, but also genericity and easyness to write and
@@ -171,7 +175,7 @@ fields into smaller ones (when possible).
 These algorithms often rely on linear algebra, and the cost is at least 
 quadratic in
 the degree of the extension you are dealing with. The algorithms presented in
-\cite{DDS14} rely on polynomial arithmetic, and have a quasi-linear cost for 
+\cite{DeDoSc14} rely on polynomial arithmetic, and have a quasi-linear cost for 
 most of the algorithms needed to
 compute in the algebraic closure of a finite field. In this section, we will
 introduce (briefly) the tools used in the algorithms, and explain how they work.
@@ -251,9 +255,10 @@ and an isomorphism $\Phi$ of the form :
   &\varphi_x: & k[x]/(P) & \to & k[z]/(R)\\[2mm]
   & \varphi_y: & k[y]/(Q) & \to & k[z]/(R)\\[2mm]
   \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \to & k[z]/(R) \\
-  & &  xy & \mapsfrom & z.
+  & &  xy & \mapsto & z.
 \end{array}
 \]
+
 We will provide algorithms for $\varphi_x$, $\varphi_y$ and $\Phi$ in section
 \ref{sec-algo}.
 
@@ -267,19 +272,97 @@ bases $(\bxi,\bupsilon)$, then the matrix of the linear map $u^t:F'\rightarrow
 F$ in the bases
 $(\bupsilon^*,\bxi^*)$ is $M^t$. Given an algorithm to compute a linear map
 $u:E\rightarrow E'$ in the bases $(\bxi,\bupsilon)$, the transposition principle
-enable one to compute the dual map $u^t:F'\rightarrow F$ in the bases
+says that you can transpose it to obtain a new algorithm computing the dual map 
+$u^t:F'\rightarrow F$ in the bases
 $(\bupsilon^*,\bxi^*)$. The costs of the two algorithms only differ by a
-constant. Roughly speaking, transposing an algorithm consist on transposing all
+constant. Roughly speaking, transposing an algorithm consists on transposing all
 the subroutines and inverse their orders.
-\begin{center}
-  Maybe place here a tabular with drawing \& algorithmic result in both
-  transposed and non-transposed mode. 
-\end{center}
+
+Let $A$ be an algorithm taking $x_1$ and $x_2$ as input, and computing 
+$y_1=ax_1+bx_2$ and $y_2=cx_1+dx_2$. $A$ is linear and we obtain its 
+transposition $A^t$ by reversing all the arrows and exchanging $\times$ and $+$ 
+in the graph representing $A$. We obtain an algorithm that takes $y_1$ and 
+$y_2$ as input and compute $x_1=ay_1+cy_2$ and $x_2=by_1+dy_2$.
+
+\begin{tikzpicture}
+  \matrix[matrix of math nodes,column sep={60pt,between origins},row
+    sep={60pt,between origins},nodes={asymmetrical rectangle}] (s)
+  {
+    &|[name=x1]| x_1 &|[name=1]| \times &|[name=2]| + & |[name=y1]| y_1\\
+    %
+    &|[name=x2]| x_2 &|[name=3]| \times &|[name=4]| + &|[name=y2]| y_2 \\
+  };
+  \draw[->,>=latex] (1) edge node[auto] {\(a\)} (2)
+  			(3) edge node[auto] {\(d\)} (4)
+            (1) edge (4)
+            (3) edge (2)
+            (x1) edge (1)
+            (x2) edge (3)
+            (2) edge (y1)
+            (4) edge (y2)
+            ;
+            \draw (1.5,0.3) node {$b$}
+            (1.5,-0.3) node {$c$}
+            ;
+	    \draw[->,>=latex,gray,dotted,thick] (1,-1.5) -- (1,-2.5);
+	    \draw[gray] (3,-2) node {transposition principle};
+\end{tikzpicture}
+
+\begin{tikzpicture}
+  \matrix[matrix of math nodes,column sep={60pt,between origins},row
+    sep={60pt,between origins},nodes={asymmetrical rectangle}] (s)
+  {
+    &|[name=x1]| x_1 &|[name=1]| + &|[name=2]| \times & |[name=y1]| y_1\\
+    %
+    &|[name=x2]| x_2 &|[name=3]| + &|[name=4]| \times &|[name=y2]| y_2 \\
+  };
+  \draw[->,>=latex] (2) edge node[auto] {\(a\)} (1)
+  		(4) edge node[auto] {\(d\)} (3)
+            (4) edge (1)
+            (2) edge (3)
+            (1) edge (x1)
+            (3) edge (x2)
+            (y1) edge (2)
+            (y2) edge (4)
+            ;
+            \draw (1.5,0.3) node {$b$}
+            (1.5,-0.3) node {$c$};
+\end{tikzpicture}
+
+Let us introduce some operations and their transposes. Let $k$ be a field and 
+$k[x]_m$ the vector space of polynomials of degree at most $m$, the reversal 
+operator of $k[x]_m$ is the map such that
+
+\[  
+\begin{array}{rccc}
+  \textbf{rev}(\cdot,m): & k[x]_m & \to & k[x]_m \\
+   & Q & \mapsto & x^mQ(1/x)
+\end{array}.
+\]
+We can see that \textbf{rev} is its own transpose, indeed \textbf{rev} is a 
+linear map and its matrix in the cannocial basis of $k[x]_m$ is symmetric : it 
+is the matrix with $1$ on the anti-diagonal. Let now $P\in k[x]$ be a monic 
+polynomial of degree $m$ and $n\in\mathbb{N}$ an integer, we denote by 
+$\textbf{rem}(\cdot,P,n)$ the remainder by $P$ with length $n$, defined by 
+\[  
+\begin{array}{rccc}
+  \textbf{rem}(\cdot,P,n): & k[x]_n & \to & k[x]_{m-1} \\
+   & Q & \mapsto & Q\mod P
+\end{array}.
+\]
+
+As you can see in \cite{BoLeSc03}, $\textbf{rem}^t(\cdot,P,n)$ is the linear 
+sequence extension : it takes as input the $m$ first elements of a linear 
+recurring sequence and compute the $n+1$ first using $P$ as the minimal 
+polynomial of the sequence.
+
 \subsection{The algorithms}
 \label{sec-algo}
 All the algorithms described here, and their complexity analysis, have been
-discussed in \cite{DDS14}, that's why we won't show all the pseudo-codes but
-rather try to explain howkthey work and on which result they are based.
+discussed in \cite{DeDoSc14}, that's why we won't show all the pseudo-codes but
+rather try to explain how they work and on which result they are based. The 
+complexities will also be given without any proofs. 
+
 As we saw in the previous section, transposing an algorithm result in a change
 of basis. Thus, it is important to be able to go from a basis to another. Here
 again, $k$ is a finite field and, $P$ an irreducible monic polynomial of $k[x]$, 
@@ -309,13 +392,13 @@ them. You obtain, by lemma \ref{lm-basis} :
 Since we said that
 $(\tau_P(ax^i))_{0\leq i \leq m-1}$ are the coordinates of $a$ in the dual basis
 $\bxi^*$, taking the coefficient of the polynomial
-$\sum_{i=0}^{m-1}\tau_P(ax^i)x^i$ gives a solution to fo from the monomial basis
+$\sum_{i=0}^{m-1}\tau_P(ax^i)x^i$ gives a solution to go from the monomial basis
 to the dual basis, that can be written as follows.
 \newline
 
 \textbf{MonomialToDual}(a, P)\\
 \textbf{Input} $\textbf{a}=(a_i)_{0\leq i\leq m-1}\in k^m$, $P$ an irreducible
-monic polynomial of degree $m$.\\
+monic polynomial of degree~$m$.\\
 \textbf{Output} $(\tau_P(ax^i))_{0\leq i \leq m-1}$, with $a=\sum_{0\leq i
 \leq m-1}a_ix^i$
 \begin{enumerate}
@@ -353,7 +436,12 @@ $\tau_P(\sum_{0\leq i \leq m-1}ax^{i+j})=b_j$ for all $j$
 
 As we see, even if the lemma holds in $k[[x]]$, we just need to work $\mod x^m$
 so the inverses can be obtained with fast algorithms for \textsc{Euclide}
-division.
+division. \textbf{MonomialToDual} uses $O(M(m))$ operations in $k$, where 
+$M(m)$ is the number of operations in $A$ of a multiplication of polynomials of 
+degree at most $m$ on any ring $A$. The cost of \textbf{DualToMonomial} is 
+$O(M(m)\log(m))$, but can be reduced to $O(M(m))$ with precomputations. $M$ is 
+a function that is quasi-linear, so the change-of-basis algorithms are 
+quasi-linaear too. 
 
 \paragraph{Embedding and computing R.} Let $Q$ be an irreducible monic
 polynomial of $k[y]$ of degree $n$, with $n$ coprime to $m$. Let also $R=P\odot
@@ -395,6 +483,7 @@ to $r=mn$ by defaut\\
   \item $(u_i)_{0\leq i \leq r-1}=\remt(\textbf{c},P,r)$
   \item \textbf{return} $(t_iu_i)_{0\leq i \leq r-1}$
 \end{enumerate}
+\textbf{Embed} uses $O(r(M(m)/m + M(n)/n))$ operations in $k$.
 If $u_P$ is the vector of the coordinates of $1\in k[x]/(P)$ in the dual basis
 $\bxi^*$ and $u_Q$ the vector define similarly, we can compute
 $\varphi_x=\textbf{Embed}(\cdot,u_Q)$ and $\varphi_y=\textbf{Embed}(u_P,\cdot)$.
@@ -424,7 +513,7 @@ image, also called a section of $\varphi_x$. Remarking that $\varepsilon$ is
 nothing else that $\textbf{Embed}(\cdot,c)$, where $c=(1,0,\dots,0)$, we have 
 an algorithm for $\varepsilon$, and, by transposing this algorithm, we have an 
 algorithm for $\varepsilon^t$, which is the section of $\varphi_x$ we were 
-searching.
+searching. This algorithm uses $O(nM(m)+nM(n))$ operations in $k$.
 
 \paragraph{Isomorphism.} We will apply the same kind of strategy to deduce an 
 algorithm for $\Phi^{-1}$ from an algorithm for $\Phi$. First, recall that 
@@ -456,11 +545,41 @@ dual basis $\bxi^*$ are $(\tau_P(x^{i+j}))_{0\leq j\leq m-1}$ ($u_P$ shifted
 $i$ times), we have an algorithm to compute $\Phi$ in the basis 
 $\bxi\otimes\bupsilon^*$ and giving the result in the basis $\bzeta^*$. As we 
 noticed, transposing this algorithm will create a new algorithm computing 
-$\Phi^{-1}$ and expressed in the bases $\bzeta$ and $\bxi^*\otimes\bupsilon$.
+$\Phi^{-1}$ and expressed in the bases $\bzeta$ and $\bxi^*\otimes\bupsilon$. 
+These algoithms both have a quadratic cost in the degree $m$ : $O(m^2M(n))$.
 
 The second way of computing $\Phi$ does not depend on previous algorithms, but 
 we will still be able to deduce an algorithm for $\Phi^{-1}$ from it using the 
-transposition principle.
+transposition principle. It is best suited when dealing with $m$ and $n$ of the 
+same magnitude and it uses baby steps / giant steps : a technique consisting of 
+sacrificing memory to gain speed. Recall that $\Phi(xy)=z$, then, if $b\in 
+k[x,y]/(P,Q)$, we can write
+\begin{eqnarray*}
+b&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} b_{i,j}x^i y^j
+=~\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} b_{i,j}x^i y^i y^{j-i}\\
+&=&\sum_{h=-m+1}^{n-1}\sum_{i=0}^{m-1} b_{i,i+h}(xy)^i y^h
+=~\frac{1}{y^{m-1}} \sum_{h=0}^{m+n-2} c_h(xy) y^h,
+\end{eqnarray*}
+with $c_h(xy)=\sum_{0 \leq i \leq m-1} b_{i,i+h-m+1} (xy)^i$, and where 
+undefined indices $b_{i,i+h-m+1}$ equal zero. So $\Phi(xy)=z$ is known, but 
+also $T=\Phi(y)$, because $y\in\Pi$ so we can use $\textbf{Embed}$ to compute 
+it. Then, we have 
+\[
+a = \frac{1}{T^{m-1}}\tilde a \mod R \text{ with } \tilde a = \sum_{h=0}^{m+n-2} 
+c_h(z) T^h.
+\]
+This is the equality that will be exploited to compute $\Phi$, and, thanks to 
+baby steps / giant steps techniques, this will be reduced to matrix 
+multiplication (but the coefficients of those matrices are polynomials). This 
+technique gives an algorithm expressed in the bases $\bxi\otimes\bupsilon$ and 
+$\bzeta$. Details can be found in \cite{DeDoSc14}. As we said earlyer, we 
+immediatly deduce an algorithm for $\Phi^{-1}$ using the 
+transposition principle, this last algorithm will be expressed in the bases 
+$\bzeta^*$ and $\bxi^*\otimes\bupsilon^*$. Both these algorithms use 
+$O(M(mn)n^{1/2}+M(m)n^{(\omega+1)/2})$ operations in $k$, where $\omega$ is a 
+constant such that one can multiply two matrices of size $n\times n$ over any 
+ring $A$ in $O(n^\omega)$ operations in $A$ (we know that $2 < \omega \leq 
+2.38$).
 
 
 \section{Julia/Nemo in practice}
