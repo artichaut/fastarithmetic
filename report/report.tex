@@ -68,7 +68,8 @@
 
 % opening
 \title{Internship report}
-\author{Édouard \textsc{Rousseau}\\Internship supervised by Luca \textsc{De 
+\author{Édouard \textsc{Rousseau}\\edouard.rousseau@u-psud.fr\\ \\Internship 
+supervised by Luca \textsc{De 
 Feo}}
 
 \usepackage{tikz-cd}
@@ -85,9 +86,14 @@ Feo}}
   This internship took place during July and August 2016, the aim was to study
   the algorithms presented in \cite{DeDoSc14}, and to implement them in Nemo
   \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming
-  language. This paper intends to compare the Julia and the C implementations of
-  the code, in terms of speed, but also genericity and easyness to write and
-  read such code.
+  language. These algorithms were designed to deal with the algebraic closure 
+  of finite fields, and often have a quasi-linear cost, when traditionnal 
+  implementations have quadratic cost. This paper intends to compare the Julia 
+  and the C implementations of the code, in terms of speed, but also genericity 
+  and easyness to write and read such code. As we will see, writing code in 
+  Julia is really easy, and the tools available to develop the code are 
+  sharp, but the speed of the implementation in Julia doesn't match the speed 
+  of the C implementation.
 
 \end{abstract}
 
@@ -644,10 +650,23 @@ Irreducible polynomials of degree $1$ to $201$ were precomputed, by chosing
 random elements in $\mathbb{F}_{p}[X]$, in order to
 always use the same list and to be sure that we are not using special
 polynomials that could be speeding up the functions (like sparse
-polynomials). In the arrays, the speed of
-the C code is set to $1.00$, and smaller is better. The speed of 
-\textbf{monomialToDual} and of \textbf{dualToMonomial} are the same, either in C
-or Julia, so we show the results only for the first.
+polynomials). 
+
+The benchmarks of the C code were realised thanks to a python 
+script writen by the authors of the code, that you can find at 
+https://github.com/defeo/ff\_compositum. The benchmarks work the same but not 
+all the values of $m$ were tested, so I just chose to compare the results for 
+certain values of $m$ tested (I also could have change the script...).
+
+In the arrays, the speed of
+the C code is set to $1.00$, and smaller is better. One of the functions 
+benchmarked in the C code, the modular multiplication \textbf{mulmod}, was 
+already implemented in Nemo, so we start to compare the results. As we see, the 
+Julia function is about $15$ times slower than the C function. Since this 
+function is a basic function of Nemo, and since the Julia code of 
+FastArithmetic.jl is largely based on Nemo, we cannot really expect to be as 
+fast as the C code, and $15$ times slower might be a bound for the speed (if 
+using Nemo).
 
 \begin{center}
   \begin{tabular}[here]{c}
@@ -662,18 +681,41 @@ or Julia, so we show the results only for the first.
     \end{tabular}
   \end{tabular}
 \end{center}
+The speed of \textbf{monomialToDual} and of \textbf{dualToMonomial} are the 
+same, either in C or Julia, so we show the results only for the first. The 
+results are really disappointing and awfully slow. This is sad because these 
+functions are important : they should be used really often to switch between 
+the different bases. Even given the simplicity of these algorithms, I can't 
+find a way to speed them up. Perhaps I did an obvious mistake. The algorithm 
+for the transposed modular multiplication is in the same case. 
 
+Surprisingly, even with starting that bad, the algorithms for computing 
+embeddings, projections (ie. sections) and isomorphisms (at least one of them) 
+are not so far away, they are around $30$ times slower than C. The 
+implementations are probably optimizable, and we could maybe approach the $C$ 
+speed a little more. \textbf{inversePhi1} is, for an unknown 
+reason, three times faster than its transposition \textbf{Phi1}. As for 
+\textbf{phi2} and its slowness, the causes are maybe both a greatly optimizable 
+implementation and difficulties for Julia to handle matrices operations 
+appearing in \textbf{phi2}. \textbf{inversePhi2} is even slower, but it is not 
+surprising, since it uses \textbf{mulmotT} a lot of time, which is very slow 
+itself. We did not mention the time to compute $R$ in these tables, the reason 
+is because the implementation of the \textsc{Berlekamp-Massey} algorithm used 
+in it is naive, so the algorithm \textbf{computeR} can be improved easily by 
+improving \textsc{Berlekamp-Massey}. But for now, the results of 
+\textbf{computeR} 
+are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
 \begin{center}
 \begin{tabular}[here]{ccc}
 \textbf{monomialToDual} & \textbf{mulModT} & \textbf{embed} \\
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $5.12$\\
-   $51$ & $1.14$\\
-   $104$ & $0.56$\\
-   $140$ & $0.44$\\
-   $187$ & $0.38$\\
+   $10$ & $193$\\
+   $51$ & $1.7\times 10^3$\\
+   $104$ & $4.5\times 10^3$\\
+   $140$ & $7.3\times 10^3$\\
+   $187$ & $1.4\times 10^4$\\
 
   \end{tabular}
 
@@ -738,6 +780,19 @@ or Julia, so we show the results only for the first.
   \end{tabular}
 \end{tabular}
 \end{center}
+
+\section{Conclusion and future work}
+Unfortunately, the power of Julia has not been demonstrated in this paper, and 
+we were unable to match C speed. But, as we saw, certain algorithms were not so 
+far. With further investigations, we could understand why some functions are 
+slow ; and, since the functions are inter-dependent, speed up the whole. If you 
+find any error in this report, you can send me a message 
+(edouard.rousseau@u-psud.fr). You can do the same if you find the code in 
+FastArithmetic.jl unreadable, or if you see how I managed to slow the 
+algorithms. Finally, I would like to thank \textsc{Luca De Feo} for taking me 
+as an intern during the summer, and for answering my naive questions by mail or 
+in front of a coffee. I also hope you enjoyed reading this paper, have a good 
+day !
 
 
 \clearpage

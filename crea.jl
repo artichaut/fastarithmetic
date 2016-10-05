@@ -1,7 +1,7 @@
 using Nemo, FastArithmetic, BenchmarkTools
 
-k,u=FiniteField(5,1,"u")
-K,t=PolynomialRing(k,"t")
+const k,u=FiniteField(5,1,"u")
+const K,t=PolynomialRing(k,"t")
 
 function create(n::Int64,k::Nemo.Field,c::Int64=5)
   A=Array(fq_nmod,n)

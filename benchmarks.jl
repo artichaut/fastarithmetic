@@ -1,19 +1,6 @@
 include("crea.jl")
 include("irreduciblePol.jl")
 
-function benchMonomial(n::Int64)
-  k,u=FiniteField(5,1,"u")
-  K,t=PolynomialRing(k,"t")
-  A=Array(Float64,(n,2))
-  for j in 1:n
-    P = createPol(n,K)
-    a = create(n,k)
-    b = @benchmark monomialToDual($a,$P)
-    A[j,1],A[j,2]=j,median(b).time
-  end
-  writedlm("monomialToDual.txt",A)
-end
-
 function benchPhi1()
   k,u=FiniteField(5,1,"u")
   K,t=PolynomialRing(k,"t")
@@ -50,8 +37,9 @@ function benchMonomialToDual()
   A=Array(Float64,(200,2))
   for j in 1:200
     println(j)
-    P = irrPol[j]
-    a = create(j,k)
+    J = j*(j+1)
+    P = createPol(J,K) 
+    a = create(J,k)
     b = @benchmark monomialToDual($a,$P)
     A[j,1],A[j,2]=j,median(b).time/10^9
     writedlm("monomialToDual.txt",A)
@@ -64,8 +52,9 @@ function benchDualToMonomial()
   A=Array(Float64,(200,2))
   for j in 1:200
     println(j)
-    P = irrPol[j]
-    a = create(j,k)
+    J = j*(j+1)
+    P = createPol(J,K)
+    a = create(J,k)
     b = @benchmark dualToMonomial($a,$P)
     A[j,1],A[j,2]=j,median(b).time/10^9
     writedlm("dualToMonomial.txt",A)
@@ -200,7 +189,7 @@ function benchMulmod()
   A=Array(Float64,(200,2))
   for j in 1:200
     println(j)
-    P,Q,R=createPol(j,K),createPol(j,K),createPol(j,K)
+    P,Q,R=createPol(j*(j+1),K),createPol(j*(j+1),K),createPol(j*(j+1),K)
     b = @benchmark mulmod($P,$Q,$R)
     A[j,1],A[j,2]=j,median(b).time/10^9
     writedlm("mulmod.txt",A)
@@ -213,9 +202,11 @@ function benchMulModT()
   A=Array(Float64,(200,2))
   for j in 1:200
     println(j)
-    P,Q,R=createPol(j,K),createPol(j,K),createPol(j,K)
-    b = @benchmark mulModT($P,$Q,$R,$j)
+    J = j*(j+1)
+    a = create(J,k)
+    Q,R=createPol(J,K),createPol(J,K)
+    b = @benchmark mulModT($a,$Q,$R,$J)
     A[j,1],A[j,2]=j,median(b).time/10^9
-    writedlm("mulmodT.txt",A)
+    writedlm("mulModT.txt",A)
   end
 end
