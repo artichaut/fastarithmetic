@@ -624,7 +624,8 @@ BenchmarkTools.Trial:
   maximum time:     10.00 ns (0.00% GC)
 \end{verbatim}
 which runs the desired function and measures the time it takes. It's possible
-to choose all the parameters of the benchmark and you can use different
+to choose all the parameters (number of samples, number of evaluation
+per sample,\dots) of the benchmark and you can use different
 estimators. For the following benchmarks, we use the median time, because it
 is more stable than the mean time and still give an idea of the average time
 the function will take. The stability we are talking about is linked with the
@@ -633,7 +634,7 @@ memory, and the variables we assign are cleared by the Garbage Collector
 (GC). The time Julia pass in the GC is not very clear nor predictible, and the
 operations in the GC take a significant time. That's why the time taken by a
 function can change between two samples, depending on the time spent in the GC.
-By default, before every benchmark, the garbage if automaticaly collected, but
+By default, before every benchmark, the garbage is automaticaly collected, but
 there is still a bit of unstabiliy.
 Since all the functions written in FastArithmetic.jl depends on at least one
 polynomial $P$, sometimes also $Q$ and $R=P\odot Q$, we let $m=\deg (P)$ grow
