@@ -650,7 +650,9 @@ Irreducible polynomials of degree $1$ to $201$ were precomputed, by chosing
 random elements in $\mathbb{F}_{p}[X]$, in order to
 always use the same list and to be sure that we are not using special
 polynomials that could be speeding up the functions (like sparse
-polynomials). 
+polynomials). When only one field is involved in an operation (such as in 
+modular multiplication or in change of basis) the field used is 
+$\mathbb{F}_{m(m+1)}\cong k[z]/(R)$.
 
 The benchmarks of the C code were realised thanks to a python 
 script writen by the authors of the code, that you can find at 
