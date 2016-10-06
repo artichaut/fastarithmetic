@@ -33,14 +33,14 @@
 {\newline}{}
 
 \theoremstyle{break}
-\newtheorem{thm}{Théorème}[section]
+\newtheorem{thm}{Theorem}[section]
 \newtheorem{lm}[thm]{Lemma}
 \newtheorem{prop}[thm]{Proposition}
-\newtheorem{cor}[thm]{Corollaire}
+\newtheorem{cor}[thm]{Corollary}
 
 \theoremstyle{definition}
-\newtheorem{defi}[thm]{Définition}
-\newtheorem{ex}[thm]{Exemple}
+\newtheorem{defi}[thm]{Definition}
+\newtheorem{ex}[thm]{Example}
 
 \theoremstyle{remark}
 %\newtheorem{rem}[thm]{Remarque}
@@ -84,15 +84,15 @@ Feo}}
 \begin{abstract}
 
   This internship took place during July and August 2016, the aim was to study
-  the algorithms presented in \cite{DeDoSc14}, and to implement them in Nemo
-  \cite{Nemo}, a computer algebra package for the Julia \cite{Julia} programming
+  the algorithms presented in~\cite{DeDoSc14}, and to implement them in
+  Nemo~\cite{Nemo}, a computer algebra package for the Julia~\cite{Julia} programming
   language. These algorithms were designed to deal with the algebraic closure 
-  of finite fields, and often have a quasi-linear cost, when traditionnal 
-  implementations have quadratic cost. This paper intends to compare the Julia 
+  of finite fields, and often have a quasi-linear cost, whereas traditional 
+  algorithms have quadratic cost. This paper intends to compare the Julia 
   and the C implementations of the code, in terms of speed, but also genericity 
-  and easyness to write and read such code. As we will see, writing code in 
+  and ease of writing and reading such code. As we will see, writing code in 
   Julia is really easy, and the tools available to develop the code are 
-  sharp, but the speed of the implementation in Julia doesn't match the speed 
+  sharp, but the speed of the implementation in Julia does not match the speed 
   of the C implementation.
 
 \end{abstract}
@@ -106,7 +106,7 @@ Feo}}
 Julia is a free and open-source, high-level programming language developed since 
 2012, with dynamic
 type system and high-performance. It is a compiled language, with a
-\emph{just-in-time} (jit) compilation. It means that when you write a
+\emph{just-in-time} (jit) compilation. This means that when you write a
 function, e.g. 
 \begin{verbatim}
 julia> function myFunction(n)
@@ -126,8 +126,8 @@ In order to optimize the code, the compiler creates a new function for each
 type of input that you can think of when calling myFunction. For example, in the
 code 
 below, Julia will compile myFunction three times, which will result in
-three functions, each one of them optimized for \textbf{Int64} (the default type
-of $17$), \textbf{Float64}, or \textbf{BigInt}.
+three functions, each one of them optimized for \texttt{Int64} (the default type
+of $17$), \texttt{Float64}, or \texttt{BigInt}.
 \begin{verbatim}
 julia> myFunction(17)
 4932
@@ -139,19 +139,20 @@ julia> myFunction(BigInt(17))
 Julia is a very easy-to-learn language, I had never seen Julia code before the 
 internship, and I am not an expert in computer science, but the writing part of
 the code was not the hardest. 
-The code written in FastArithmetic.jl is
+The code written in \href{https://github.com/edouardRousseau/FastArithmetic.jl}{FastArithmetic.jl} is
 very generic, thanks to the type system of Julia, and works for fields
 $\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
 \emph{jit} compiler creates a function for each kind of $p$. Indeed the elements
-of $\mathbb{F}_{p^n}$ have type \textbf{fq\_nmod} for $p$ small or \textbf{fq}
+of $\mathbb{F}_{p^n}$ have type \texttt{fq\_nmod} for $p$ small or \texttt{fq}
 for $p$ large, so one can write only one function and have two compiled
-functions : one for each type, which will be optimized by the compiler for this 
+functions: one for each type, which will be optimized by the compiler for this 
 type.
 
 \subsection{Nemo}
 
 Nemo is a computer algebra package of Julia, you can install it with 
 \begin{verbatim}
+julia> Pkg.add("Nemo")
 julia> using Nemo
 \end{verbatim}
 and test it with the following.
@@ -161,15 +162,15 @@ julia> Pkg.test(``Nemo'')
 Nemo is based on C/C++ libraries such as Flint, Antic, Pari, etc. and is also
 written in Julia. It provides a lot of features, and all the work of this
 internship is based on Nemo. Indeed, we work with Nemo finite fields and Nemo
-polynomials over these fields. \textbf{fq}, \textbf{fq\_nmod}, and
-\textbf{fq\_nmod\_poly} (the type of the polynomials over $\mathbb{F}_{p^n}$) 
+polynomials over these fields. \texttt{fq}, \texttt{fq\_nmod}, and
+\texttt{fq\_nmod\_poly} (the type of the polynomials over $\mathbb{F}_{p^n}$) 
 are
 all Nemo types. You can learn more in Nemo's manual, which is very well
 documented.
 
 \section{A bit of theory}
 \subsection{General background}
-In most of the computer algebra system, like Sage, Magma, Flint, etc., it is 
+In most of the computer algebra systems, like Sage, Magma, Flint, etc., it is 
 possible to work with finite
 fields and their algebraic closure. Let $p$ be a prime number and
 $k=\mathbb{F}_p$ the field with $p$ elements, the algebraic closure of $k$ is
@@ -180,31 +181,31 @@ fields into smaller ones (when possible).
 
 These algorithms often rely on linear algebra, and the cost is at least 
 quadratic in
-the degree of the extension you are dealing with. The algorithms presented in
-\cite{DeDoSc14} rely on polynomial arithmetic, and have a quasi-linear cost for 
+the degree of the extension you are dealing with. The algorithms presented
+in~\cite{DeDoSc14} rely on polynomial arithmetic, and have a quasi-linear cost for 
 most of the algorithms needed to
 compute in the algebraic closure of a finite field. In this section, we will
 introduce (briefly) the tools used in the algorithms, and explain how they work.
 The most important result is the \emph{transposition principle}, which is an
 algorithmic proposition that guarantees that if you have a linear algorithm
-performing a matrix-vector product $v\mapsto Mv$, you can \emph{tranpose} it to
-obtain an other algorithm, which has essentialy the same cost, performing the 
+performing a matrix-vector product $v\mapsto Mv$, you can \emph{transpose} it to
+obtain another algorithm, which has essentially the same cost, performing the 
 transposed matrix-vector product $v\mapsto
 M^tv$. But we first need to talk about \emph{duality}, because the transposition
-principle also change the base you are working with.
+principle also changes the basis you are working with.
 \subsection{Trace and duality}
 Let $k$ be a finite field, and  $E,F$ be two $k$-vector spaces with the same
 finite dimension $\dim E = \dim F < \infty$. Let also
 $\ps{\cdot}{\cdot}:E\times F\rightarrow k$ be a non-degenerate bilinear form. 
 Then,
-for any basis $\bxi=(\xi_i)_i$ of $E$, their exists a unique basis
+for any basis $\bxi=(\xi_i)_i$ of $E$, there exists a unique basis
 $\bxi^*=(\xi_j^*)_j$ of $F$
 such that $\forall (i,j),\ps{\xi_i}{\xi_j^*}=\delta_{i,j}$ where $\delta_{i,j}$ 
 is
 the \textsc{Kronecker} symbol and $\delta_{i,j}=1$ if $i=j$ and 0 otherwise.
-The base $\bxi^*$ is called the \emph{dual basis} of $\bxi$.
-Equally, let $E',F'$ be two other $k$-vector spaces with $\dim E' = \dim F' <
-\infty$ and $\ps{\cdot}{\cdot}':E'\times F'\rightarrow k$ an other 
+The basis $\bxi^*$ is called the \emph{dual basis} of $\bxi$.
+Similarly, let $E',F'$ be two other $k$-vector spaces with $\dim E' = \dim F' <
+\infty$ and $\ps{\cdot}{\cdot}':E'\times F'\rightarrow k$ another 
 non-degenerate
 bilinear form. Then, for any linear map $u:E\rightarrow E'$, there exists a
 unique map $u^t:F'\rightarrow F$ such that $\forall (a,b)\in E\times
@@ -214,11 +215,11 @@ with respect to $\ps{\cdot}{\cdot}$ and $\ps{\cdot}{\cdot}'$.
 It's now time to speak about the \emph{trace form}, it will be our candidate to 
 be 
 $\ps{\cdot}{\cdot}$, the non-degenerate bilinear form. Let $P$ be an irreducible
-polynomial of $k[x]$ of degree $m$, $K=k[x]/(P)$ be a finite
+polynomial of $k[x]$ of degree $m$, let $K=k[x]/(P)$ be a finite
 extension of $k$, and $a\in K$. We denote by $\mu_a$ the application of
-multiplication-by-a, $\mu_a:K\rightarrow K, b\mapsto ab$. $K$ is a $k$-vector
-space of dimension $m$ and $\mu_a$ is an endomorphism of $K$. But, for all 
-$a,b\in K$, we also denote $\tau_P(ab)$ to be the trace of the endomorphism 
+multiplication-by-$a$, $\mu_a:K\rightarrow K, b\mapsto ab$. $K$ is a $k$-vector
+space of dimension $m$ and $\mu_a$ is an endomorphism of $K$. For all 
+$a,b\in K$, we also denote by $\tau_P(ab)$ the trace of the endomorphism 
 $\mu_{ab}$, and we define
 $\ps{a}{b}_P=\tau_P(ab)$. This defines a non-degenerate bilinear form on 
 $K\times
@@ -236,7 +237,7 @@ possible to construct the trace $\tau_{P,Q}$ of an element of $L$, and we define
 the same way
 a non-degenerate bilinear form $\psdot_{P,Q}$ on $L\times L$. If
 $\bxi=(x^i)_{0\leq i\leq m-1}$ and $\bupsilon=(y^j)_{0\leq j \leq n-1}$ are the
-monomial basis of respectively $k[x]/(P)$ and $k[y]/(Q)$, then
+monomial bases of respectively $k[x]/(P)$ and $k[y]/(Q)$, then
 $\bxi\otimes\bupsilon=(x^iy^j)_{0\leq i \leq m-1,0\leq j \leq n-1}$ is the
 cannonical monomial basis of $L$. But, if $\bxi^*$ and $\bupsilon^*$ are
 respectively the dual basis of $\bxi$ with respect to $\tau_P$ and the dual
@@ -248,29 +249,28 @@ $\bxi^*\otimes\bupsilon$.
 
 Constructing
 $\mathbb{F}_{p^{mn}}$ this way leads to a bivariate reprentation of the
-elements. We prefer an univariate representation, because the algorithm we have
-in this case are more efficient, even for simple operations such as addition or
+elements. We prefer a univariate representation, because the algorithms we have
+in this case are more efficient, even for simple operations such as 
 multiplication. Hence, we can represent $\mathbb{F}_{p^{mn}}$ by $k[z]/(R)$
 where $R=P\odot Q$ is the composed product of $P$ and $Q$. It means that if
 $(p_i)_{0\leq i \leq m-1}$ and $(q_j)_{0\leq j\leq n-1}$ are respectively the
 roots of $P$ and $Q$ in a algebraic closure of $k$, $R$ is the polynomial whose
 roots are the products $p_iq_j$. So we have embeddings $\varphi_x$, $\varphi_y$
-and an isomorphism $\Phi$ of the form :
+and an isomorphism $\Phi$ of the form:
 \[
-\begin{array}{ccccc}
-  &\varphi_x: & k[x]/(P) & \to & k[z]/(R)\\[2mm]
-  & \varphi_y: & k[y]/(Q) & \to & k[z]/(R)\\[2mm]
-  \text{and}& \Phi:&  A=k[x,y]/(P,Q) & \to & k[z]/(R) \\
-  & &  xy & \mapsto & z.
+\begin{array}{crcl}
+  \varphi_x: & k[x]/(P) & \to & k[z]/(R),\\[2mm]
+  \varphi_y: & k[y]/(Q) & \to & k[z]/(R),\text{ and}\\[2mm]
+  \Phi:&  A=k[x,y]/(P,Q) & \to & k[z]/(R) \\
+  &  xy & \mapsto & z.
 \end{array}
 \]
 
-We will provide algorithms for $\varphi_x$, $\varphi_y$ and $\Phi$ in section
-\ref{sec-algo}.
+We will provide algorithms for $\varphi_x$, $\varphi_y$ and $\Phi$ in Section~\ref{sec-algo}.
 
 \subsection{Transposition principle}
 Let, as in the previous section, $\bxi$ be a basis of $E$, and $\bxi^*$ the
-basis of $F$ which is dual to $\bxi$. Let also $\bupsilon$ and $\bupsilon^*$ be 
+basis of $F$ which is dual to $\bxi$. Let also $\bupsilon$ and $\bupsilon^*$ be, respectively,
 a
 basis of $E'$ and its dual basis of $F'$. If $M$ is the matrix of a linear map
 $u:E\rightarrow E'$ in the
@@ -284,12 +284,14 @@ $(\bupsilon^*,\bxi^*)$. The costs of the two algorithms only differ by a
 constant. Roughly speaking, transposing an algorithm consists on transposing all
 the subroutines and inverse their orders.
 
+\begin{ex}
 Let $A$ be an algorithm taking $x_1$ and $x_2$ as input, and computing 
 $y_1=ax_1+bx_2$ and $y_2=cx_1+dx_2$. $A$ is linear and we obtain its 
 transposition $A^t$ by reversing all the arrows and exchanging $\times$ and $+$ 
 in the graph representing $A$. We obtain an algorithm that takes $y_1$ and 
 $y_2$ as input and compute $x_1=ay_1+cy_2$ and $x_2=by_1+dy_2$.
 
+\begin{figure}[!h]
 \begin{tikzpicture}
   \matrix[matrix of math nodes,column sep={60pt,between origins},row
     sep={60pt,between origins},nodes={asymmetrical rectangle}] (s)
@@ -334,6 +336,9 @@ $y_2$ as input and compute $x_1=ay_1+cy_2$ and $x_2=by_1+dy_2$.
             \draw (1.5,0.3) node {$b$}
             (1.5,-0.3) node {$c$};
 \end{tikzpicture}
+\caption{Transposition of a simple arithmetic circuit}
+\end{figure}
+\end{ex}
 
 Let us introduce some operations and their transposes. Let $k$ be a field and 
 $k[x]_m$ the vector space of polynomials of degree at most $m$, the reversal 
@@ -346,8 +351,8 @@ operator of $k[x]_m$ is the map such that
 \end{array}.
 \]
 We can see that \textbf{rev} is its own transpose, indeed \textbf{rev} is a 
-linear map and its matrix in the cannocial basis of $k[x]_m$ is symmetric : it 
-is the matrix with $1$ on the anti-diagonal. Let now $P\in k[x]$ be a monic 
+linear map and its matrix in the cannocial basis of $k[x]_m$ is symmetric: it 
+is the matrix with $1$'s on the anti-diagonal. Let now $P\in k[x]$ be a monic 
 polynomial of degree $m$ and $n\in\mathbb{N}$ an integer, we denote by 
 $\textbf{rem}(\cdot,P,n)$ the remainder by $P$ with length $n$, defined by 
 \[  
@@ -357,43 +362,43 @@ $\textbf{rem}(\cdot,P,n)$ the remainder by $P$ with length $n$, defined by
 \end{array}.
 \]
 
-As you can see in \cite{BoLeSc03}, $\textbf{rem}^t(\cdot,P,n)$ is the linear 
-sequence extension : it takes as input the $m$ first elements of a linear 
-recurring sequence and compute the $n+1$ first using $P$ as the minimal 
+As explained in~\cite{BoLeSc03}, $\textbf{rem}^t(\cdot,P,n)$ is the linear 
+sequence extension: it takes as input the $m$ first terms of a linear 
+recurring sequence and computes the $n+1$ first terms using $P$ as the minimal 
 polynomial of the sequence.
 
 \subsection{The algorithms}
 \label{sec-algo}
 All the algorithms described here, and their complexity analysis, have been
-discussed in \cite{DeDoSc14}, that's why we won't show all the pseudo-codes but
+discussed in~\cite{DeDoSc14}, that's why we will not show all the pseudo-codes but
 rather try to explain how they work and on which result they are based. The 
 complexities will also be given without any proofs. 
 
-As we saw in the previous section, transposing an algorithm result in a change
+As we saw in the previous section, transposing an algorithm results in a change
 of basis. Thus, it is important to be able to go from a basis to another. Here
-again, $k$ is a finite field and, $P$ an irreducible monic polynomial of $k[x]$, 
+again $k$ is a finite field, $P$ an irreducible monic polynomial of $k[x]$, 
 and
 $K=k[x]/(P)$ is a finite extension of $k$. We will be considering two bases of
-$K$ : the monomial basis $\bxi=(x^i)_{0\leq i \leq m-1}$ (where $m$ is the
+$K$: the monomial basis $\bxi=(x^i)_{0\leq i \leq m-1}$ (where $m$ is the
 degree of $P$), and its dual basis $\bxi^*$ with respect to $\psdot_P$.
 
 \paragraph{Change of basis.}The two
-first algorithms allow us to juggle the monomial and the dual basis. They are
-both based on a lemma which describe the generating series of the traces
+first algorithms allow us to juggle between the monomial and the dual basis. They are
+both based on a lemma which describes the generating series of the traces
 $\tau_P(ax^i)_{0\leq i \leq m-1}$, where $a\in K$. 
 \begin{lm}
   \label{lm-basis}
-  Let $a\in K$ be an element of $K$, in the formal power series ring $k[[x]]$,
+  Let $a\in K$ be an element of $K$. In the formal power series ring $k[[x]]$,
   we have:
   \[
-    \sum_{i\geq 0}\tau_P(ax^i)x^i=\frac{\rev(P'a\mod P,m)}{\rev(P,m+1)}.
+    \sum_{i\geq 0}\tau_P(ax^i)x^i=\frac{\rev(P'a\bmod P,m)}{\rev(P,m+1)}.
   \]
 \end{lm}
 Going from the monomial basis to the dual basis can be done by computing
-$\rev(P'a\mod P,m)\mod x^m$, $(\rev(P,m+1)\mod x^m)^{-1}$, and the product of
-them. You obtain, by lemma \ref{lm-basis} :
+$\rev(P'a\bmod P,m)\mod x^m$, $(\rev(P,m+1)\bmod x^m)^{-1}$, and the product of
+them. You obtain, by Lemma~\ref{lm-basis}:
 \[
-  \frac{\rev(P'a\mod P,m)}{\rev(P,m+1)}\mod x^m=\sum_{i=0}^{m-1}\tau_P(ax^i)x^i.
+  \frac{\rev(P'a\bmod P,m)}{\rev(P,m+1)}\mod x^m=\sum_{i=0}^{m-1}\tau_P(ax^i)x^i.
 \]
 Since we said that
 $(\tau_P(ax^i))_{0\leq i \leq m-1}$ are the coordinates of $a$ in the dual basis
@@ -417,7 +422,7 @@ Obtaining the coefficients in the monomial basis $\bxi$
 knowing the coefficients in the dual basis $\bxi^*$ is done using the same
 equality, but starting from the other half. So, computing $\sum_{0\leq i \leq
 m-1}\tau_P(ax^i)x^i \mod x^m$, $\rev(P,m+1)$, and multiplying them gives, by
-lemma \ref{lm-basis} again : 
+Lemma~\ref{lm-basis} again: 
 \[
 \rev(P,m+1)\sum_{0\leq i \leq m-1}\tau_P(ax^i)x^i \mod x^m = \rev(P'a\mod P,m) 
 \mod x^m.
@@ -456,11 +461,11 @@ $k[y]/(Q)$, $k[x,y]/(P,Q)$, and $k[z]/(R)$ which respectively have the traces
 $\tau_P$, $\tau_Q$, $\tau_{P,Q}$, $\tau_R$ and the associated bilinear forms.
 These extensions are respectively endowed with the monomial bases $\bxi$,
 $\bupsilon$, $\bxi\otimes\bupsilon$ and $\bzeta$. Finally, we denote by
-$\bxi^*$, $\bupsilon^*$ and $\bzeta^*$ the dual basis of $\bxi$, $\bupsilon$ and
+$\bxi^*$, $\bupsilon^*$ and $\bzeta^*$ the dual bases of $\bxi$, $\bupsilon$ and
 $\bzeta$ with respect to $\psdot_P$, $\psdot_Q$ and $\psdot_R$. In this paragraph, we will
 give algorithms to compute the embeddings $\varphi_x$, $\varphi_y$, their
 sections, and to compute the polynomial $R$. The algorithms follow from the next
-lemma :
+lemma.
 \begin{lm}
   \label{lm-trac}
   Let $b$ be in $k[x]/(P)$ and $c$ in $k[y]/(Q)$. Then we have
@@ -472,7 +477,7 @@ This lemma will permit us to compute the restriction of $\Phi$ to the set
   k[x,y]/(P,Q).
 \]
 Indeed, if we have the coordinates $(\tau_P(bx^i))$ and $(\tau_Q(cy^j))$ of $b$ and
-$c$ in the dual bases, we can extend them up to $mn-1$ using $\remt$, then, by lemma $\ref{lm-trac}$, we have
+$c$ in the dual bases, we can extend them up to $mn-1$ using $\remt$, then, by Lemma~\ref{lm-trac}, we have
 $(\tau_P(bx^i)\tau_Q(cy^i))_{0\leq i \leq mn-1}=(\tau_R(\Phi(bc)z^i))_{0\leq i
 \leq mn-1}$ which gives us the coordinates of $\Phi(bc)$ in the dual basis
 $\bzeta^*$. So we can obtain $\varphi_x$ and $\varphi_y$ by applying the last
@@ -491,16 +496,16 @@ to $r=mn$ by defaut\\
 \end{enumerate}
 \textbf{Embed} uses $O(r(M(m)/m + M(n)/n))$ operations in $k$.
 If $u_P$ is the vector of the coordinates of $1\in k[x]/(P)$ in the dual basis
-$\bxi^*$ and $u_Q$ the vector define similarly, we can compute
+$\bxi^*$ and $u_Q$ the vector defined similarly, we can compute
 $\varphi_x=\textbf{Embed}(\cdot,u_Q)$ and $\varphi_y=\textbf{Embed}(u_P,\cdot)$.
 Since $R$ is the minimal polynomial of the sequence
 $(\tau_R(z^i))=\textbf{Embed}(u_P,u_Q)$, we can obtain $R$ by computing the
-\textsc{Berlekamp-Massey} algorithm (which compute minimal polynomials of linear
+\textsc{Berlekamp-Massey} algorithm (which computes minimal polynomials of linear
 sequences).
 
 As we have just seen, the theory of duality gives us a very simple algorithm for
 \textbf{Embed}, but together with the transposition principle, it will also
-prove usefull to find algorithms for the section of $\varphi_x$, and, as we will
+prove useful to find algorithms for the section of $\varphi_x$, and, as we will
 see later, for $\Phi^{-1}$. Let $c\in k[y]/(Q)$ such that $\tau_Q(c)=1$ (for
 example $c=\upsilon^*_0$ is convenient), $\varepsilon:k[x]/(P)\to k[z]/(R),
 b\mapsto \Phi(bc)$, and $\varepsilon^t:k[z]/(R)\to k[x](P)$ its dual map with
@@ -539,12 +544,12 @@ $\Phi^t=\Phi^{-1}$. Hence, if we have an algorithm computing $\Phi$ in
 some bases $\textbf{a}$ and $\textbf{b}$, we can deduce, using the 
 transposition principle, an algorithm computing $\Phi^{-1}$ in the dual bases 
 $\textbf{b}^*$ and $\textbf{a}^*$. We have two algorithms for computing $\Phi$, 
-the first is better in cases where $m$ is small compared to $n$, and use the 
-linearity of $\Phi$ and the work we already done. The idea is to express $b\in 
+the first is better in cases where $m$ is small compared to $n$, and uses the 
+linearity of $\Phi$ and the work already done. The idea is to express $b\in 
 k[x,y]/(P,Q)$ in the form $b=\sum_i^{m-1}b_ix^i$ with $b_i\in k[y]/(Q)$ for all 
 $0\leq i \leq m-1$. Since the $b_ix^i$ are all in $\Pi$, we can apply 
 \textbf{Embed} and sum the result to obtain $\Phi(b)=\sum_i^{m-1}\Phi(b_ix^i)$. 
-To apply this strategy, the $b_i$ must be expressed in the dual base 
+To apply this strategy, the $b_i$ must be expressed in the dual basis 
 $\bupsilon^*$ of $k[y]/(Q)$, because \textbf{Embed} takes its input in the dual 
 bases. In the end, exploiting the fact that the coordinates of the $x^i$ in the 
 dual basis $\bxi^*$ are $(\tau_P(x^{i+j}))_{0\leq j\leq m-1}$ ($u_P$ shifted 
@@ -552,12 +557,12 @@ $i$ times), we have an algorithm to compute $\Phi$ in the basis
 $\bxi\otimes\bupsilon^*$ and giving the result in the basis $\bzeta^*$. As we 
 noticed, transposing this algorithm will create a new algorithm computing 
 $\Phi^{-1}$ and expressed in the bases $\bzeta$ and $\bxi^*\otimes\bupsilon$. 
-These algoithms both have a quadratic cost in the degree $m$ : $O(m^2M(n))$.
+These algoithms both have a quadratic cost in the degree $m$: $O(m^2M(n))$.
 
 The second way of computing $\Phi$ does not depend on previous algorithms, but 
 we will still be able to deduce an algorithm for $\Phi^{-1}$ from it using the 
 transposition principle. It is best suited when dealing with $m$ and $n$ of the 
-same magnitude and it uses baby steps / giant steps : a technique consisting of 
+same magnitude and it uses baby steps / giant steps: a technique consisting of 
 sacrificing memory to gain speed. Recall that $\Phi(xy)=z$, then, if $b\in 
 k[x,y]/(P,Q)$, we can write
 \begin{eqnarray*}
@@ -578,7 +583,7 @@ This is the equality that will be exploited to compute $\Phi$, and, thanks to
 baby steps / giant steps techniques, this will be reduced to matrix 
 multiplication (but the coefficients of those matrices are polynomials). This 
 technique gives an algorithm expressed in the bases $\bxi\otimes\bupsilon$ and 
-$\bzeta$. Details can be found in \cite{DeDoSc14}. As we said earlyer, we 
+$\bzeta$. Details can be found in~\cite{DeDoSc14}. As we said earlier, we 
 immediatly deduce an algorithm for $\Phi^{-1}$ using the 
 transposition principle, this last algorithm will be expressed in the bases 
 $\bzeta^*$ and $\bxi^*\otimes\bupsilon^*$. Both these algorithms use 
@@ -590,10 +595,10 @@ ring $A$ in $O(n^\omega)$ operations in $A$ (we know that $2 < \omega \leq
 
 \section{Julia/Nemo in practice}
 Since Julia is easy-to-write, I hope it's also
-easy-to-read, if not, I think that it is due to my lack of experience in
+easy-to-read. If not, I think that it is due to my lack of experience in
 software programing, rather than to Julia itself. You can find the code
 at
-https://gitbub.com/edouardRousseau/FastArithmetic.jl. What's more, it is really
+\url{https://gitbub.com/edouardRousseau/FastArithmetic.jl}. What's more, it is really
 easy to install personal packages, you just have to clone my repository
 inside Julia, using
 \begin{verbatim}
@@ -603,7 +608,7 @@ and you can also test the package easily by running the following.
 \begin{verbatim}
 julia> Pkg.test(``FastArithmetic'') 
 \end{verbatim}
-You may want to update the package, because the code is very suceptible to 
+You may want to update the package, because the code is very likely to 
 change, so just use
 \begin{verbatim}
 julia> Pkg.update()
@@ -612,7 +617,7 @@ and you will be ready to start again.
 \subsection{Benchmarks}
 We will now look at the speed of the code in Julia, and compare it with
 the speed in C. All the benchmarks in Julia were realised with the
-@benchmark macro available in the BenchmarkTools package. This macro lets you
+\texttt{@benchmark} macro available in the BenchmarkTools package. This macro lets you
 benchmark any function with 
 
 \begin{verbatim}
@@ -629,11 +634,11 @@ BenchmarkTools.Trial:
   mean time:        3.04 ns (0.00% GC)
   maximum time:     10.00 ns (0.00% GC)
 \end{verbatim}
-which runs the desired function and measures the time it takes. It's possible
+which runs the desired function and measures the time it takes. It is possible
 to choose all the parameters (number of samples, number of evaluation
 per sample,\dots) of the benchmark and you can use different
 estimators. For the following benchmarks, we use the median time, because it
-is more stable than the mean time and still give an idea of the average time
+is more stable than the mean time and still gives an idea of the average time
 the function will take. The stability we are talking about is linked with the
 memory management in Julia. Indeed, in Julia, we don't have to concern about
 memory, and the variables we assign are cleared by the Garbage Collector
@@ -641,12 +646,12 @@ memory, and the variables we assign are cleared by the Garbage Collector
 operations in the GC take a significant time. That's why the time taken by a
 function can change between two samples, depending on the time spent in the GC.
 By default, before every benchmark, the garbage is automaticaly collected, but
-there is still a bit of unstabiliy.
-Since all the functions written in FastArithmetic.jl depends on at least one
+there is still a bit of instability.
+Since all the functions written in FastArithmetic.jl depend on at least one
 polynomial $P$, sometimes also $Q$ and $R=P\odot Q$, we let $m=\deg (P)$ grow
 from $1$ to $200$ and benchmark the functions for all these values of $m$. We
 choose $\deg (Q)=m+1$, and both $P$ and $Q$ are irreducible polynomials.
-Irreducible polynomials of degree $1$ to $201$ were precomputed, by chosing
+Irreducible polynomials of degree $1$ to $201$ were precomputed, by choosing
 random elements in $\mathbb{F}_{p}[X]$, in order to
 always use the same list and to be sure that we are not using special
 polynomials that could be speeding up the functions (like sparse
@@ -654,13 +659,13 @@ polynomials). When only one field is involved in an operation (such as in
 modular multiplication or in change of basis) the field used is 
 $\mathbb{F}_{m(m+1)}\cong k[z]/(R)$.
 
-The benchmarks of the C code were realised thanks to a python 
-script writen by the authors of the code, that you can find at 
-https://github.com/defeo/ff\_compositum. The benchmarks work the same but not 
+The benchmarks of the C code were realized thanks to a python 
+script written by the authors of the code, that you can find at 
+\url{https://github.com/defeo/ff\_compositum}. The benchmarks work the same but not 
 all the values of $m$ were tested, so I just chose to compare the results for 
-certain values of $m$ tested (I also could have change the script...).
+certain values of $m$ tested (I also could have change the script\dots).
 
-In the arrays, the speed of
+In the tables, the speed of
 the C code is set to $1.00$, and smaller is better. One of the functions 
 benchmarked in the C code, the modular multiplication \textbf{mulmod}, was 
 already implemented in Nemo, so we start to compare the results. As we see, the 
@@ -686,7 +691,7 @@ using Nemo).
 The speed of \textbf{monomialToDual} and of \textbf{dualToMonomial} are the 
 same, either in C or Julia, so we show the results only for the first. The 
 results are really disappointing and awfully slow. This is sad because these 
-functions are important : they should be used really often to switch between 
+functions are important: they should be used really often to switch between 
 the different bases. Even given the simplicity of these algorithms, I can't 
 find a way to speed them up. Perhaps I did an obvious mistake. The algorithm 
 for the transposed modular multiplication is in the same case. 
@@ -697,10 +702,10 @@ are not so far away, they are around $30$ times slower than C. The
 implementations are probably optimizable, and we could maybe approach the $C$ 
 speed a little more. \textbf{inversePhi1} is, for an unknown 
 reason, three times faster than its transposition \textbf{Phi1}. As for 
-\textbf{phi2} and its slowness, the causes are maybe both a greatly optimizable 
-implementation and difficulties for Julia to handle matrices operations 
-appearing in \textbf{phi2}. \textbf{inversePhi2} is even slower, but it is not 
-surprising, since it uses \textbf{mulmotT} a lot of time, which is very slow 
+\textbf{Phi2} and its slowness, the causes are maybe both a greatly optimizable 
+implementation and difficulties for Julia to handle matrix operations 
+appearing in \textbf{Phi2}. \textbf{inversePhi2} is even slower, but it is not 
+surprising, since it uses \textbf{mulmodT} a lot of times, which is very slow 
 itself. We did not mention the time to compute $R$ in these tables, the reason 
 is because the implementation of the \textsc{Berlekamp-Massey} algorithm used 
 in it is naive, so the algorithm \textbf{computeR} can be improved easily by 
@@ -787,14 +792,14 @@ are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
 Unfortunately, the power of Julia has not been demonstrated in this paper, and 
 we were unable to match C speed. But, as we saw, certain algorithms were not so 
 far. With further investigations, we could understand why some functions are 
-slow ; and, since the functions are inter-dependent, speed up the whole. If you 
+slow; and, since the functions are inter-dependent, speed up the whole. If you 
 find any error in this report, you can send me a message 
 (edouard.rousseau@u-psud.fr). You can do the same if you find the code in 
 FastArithmetic.jl unreadable, or if you see how I managed to slow the 
 algorithms. Finally, I would like to thank \textsc{Luca De Feo} for taking me 
 as an intern during the summer, and for answering my naive questions by mail or 
 in front of a coffee. I also hope you enjoyed reading this paper, have a good 
-day !
+day!
 
 
 \clearpage
