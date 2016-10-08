@@ -11,7 +11,7 @@ function benchPhi1(sizes=2:200)
     b = @benchmark phi1($a,$P,$Q)
     A[i,1],A[i,2]=j,median(b).time/10^9
   end
-  writedlm("phi1.txt",A)
+  writedlm("benchmarks/phi1.txt",A)
 end
 
 function benchinversePhi1(sizes=1:200)
@@ -23,7 +23,7 @@ function benchinversePhi1(sizes=1:200)
     a = create(j*(j+1),k)
     b = @benchmark inversePhi1($a,$P,$Q)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("inversePhi1.txt",A)
+    writedlm("benchmarks/inversePhi1.txt",A)
   end
 end
 
@@ -36,7 +36,7 @@ function benchMonomialToDual(sizes=1:200)
     a = create(J,k)
     b = @benchmark monomialToDual($a,$P)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("monomialToDual.txt",A)
+    writedlm("benchmarks/monomialToDual.txt",A)
   end
 end
 
@@ -49,7 +49,7 @@ function benchDualToMonomial(sizes=1:200)
     a = create(J,k)
     b = @benchmark dualToMonomial($a,$P)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("dualToMonomial.txt",A)
+    writedlm("benchmarks/dualToMonomial.txt",A)
   end
 end
 
@@ -63,7 +63,7 @@ function benchEmbed(sizes=2:200)
     c = create(j+1,k)
     b = @benchmark embed($a,$P,$c,$Q)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("embed.txt",A)
+    writedlm("benchmarks/embed.txt",A)
   end
 end
 
@@ -76,7 +76,7 @@ function benchProject(sizes=2:200)
     Q = irrPol[j+1]
     b = @benchmark project($a,$P,$Q)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("project.txt",A)
+    writedlm("benchmarks/project.txt",A)
   end
 end
 
@@ -88,7 +88,7 @@ function benchMulTmid(sizes=1:200)
     P = irrPol[j]
     b = @benchmark mulTmid($a,$P,$j)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("mulTmid.txt",A)
+    writedlm("benchmarks/mulTmid.txt",A)
   end
 end
 
@@ -100,7 +100,7 @@ function benchRemT(sizes=1:200)
     P = irrPol[j]
     b = @benchmark remT($a,$P,$j*2)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("remT.txt",A)
+    writedlm("benchmarks/remT.txt",A)
   end
 end
 
@@ -113,7 +113,7 @@ function benchComputeR(sizes=1:20)
     Q = irrPol[10*j+1]
     b = @benchmark computeR($P,$Q)
     A[i,1],A[i,2]=10*j,median(b).time/10^9
-    writedlm("computeR.txt",A)
+    writedlm("benchmarks/computeR.txt",A)
   end
 end
 
@@ -129,7 +129,7 @@ function benchPhi2Inv(sizes=1:10)
     b = @benchmark phi2($a,$P,$Q,$R)
     bbis = @benchmark inversePhi2($abis,$P,$Q,$R)
     A[i,1],A[i,2],A[i,3]=10*j,median(b).time/10^9,median(bbis).time/10^9
-    writedlm("phi2inversephi2.txt",A)
+    writedlm("benchmarks/phi2inversephi2.txt",A)
   end
 end
 
@@ -143,7 +143,7 @@ function benchPhi2(sizes=1:20)
     R = computeR(P,Q)
     b = @benchmark phi2($a,$P,$Q,$R)
     A[i,1],A[i,2]=10*j,median(b).time/10^9
-    writedlm("phi2.txt",A)
+    writedlm("benchmarks/phi2.txt",A)
   end
 end
 
@@ -154,7 +154,7 @@ function benchMulmod(sizes=1:200)
     P,Q,R=createPol(j*(j+1),K),createPol(j*(j+1),K),createPol(j*(j+1),K)
     b = @benchmark mulmod($P,$Q,$R)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("mulmod.txt",A)
+    writedlm("benchmarks/mulmod.txt",A)
   end
 end
 
@@ -167,6 +167,6 @@ function benchMulModT(sizes=1:200)
     Q,R=createPol(J,K),createPol(J,K)
     b = @benchmark mulModT($a,$Q,$R,$J)
     A[i,1],A[i,2]=j,median(b).time/10^9
-    writedlm("mulModT.txt",A)
+    writedlm("benchmarks/mulModT.txt",A)
   end
 end
