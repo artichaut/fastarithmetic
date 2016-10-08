@@ -668,23 +668,20 @@ certain values of $m$ tested (I also could have change the script\dots).
 In the tables, the speed of
 the C code is set to $1.00$, and smaller is better. One of the functions 
 benchmarked in the C code, the modular multiplication \textbf{mulmod}, was 
-already implemented in Nemo, so we start to compare the results. As we see, the 
-Julia function is about $15$ times slower than the C function. Since this 
-function is a basic function of Nemo, and since the Julia code of 
-FastArithmetic.jl is largely based on Nemo, we cannot really expect to be as 
-fast as the C code, and $15$ times slower might be a bound for the speed (if 
-using Nemo).
+already implemented in Nemo, so we start to compare the results. We see no
+difference in terms of speed and it was predictible : the Julia
+function is calling C code.
 
 \begin{center}
   \begin{tabular}[here]{c}
     \textbf{mulmod} \\
     \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $15.47$\\
-   $51$ & $12.84$\\
-   $104$ & $17.04$\\
-   $140$ & $16.43$\\
-   $187$ & $14.78$\\
+   $10$ & $0.99$\\
+   $51$ & $1.04$\\
+   $104$ & $1.03$\\
+   $140$ & $1.05$\\
+   $187$ & $1.07$\\
     \end{tabular}
   \end{tabular}
 \end{center}
