@@ -1,19 +1,23 @@
 using Nemo, FastArithmetic, BenchmarkTools
 
-const k,u=FiniteField(5,1,"u")
+const k=ResidueRing(ZZ,5) # ,u=FiniteField(5,1,"u")
 const K,t=PolynomialRing(k,"t")
 
-function create(n::Int64,k::Nemo.Field,c::Int64=5)
-  A=Array(fq_nmod,n)
+Base.size(k::Nemo.GenResRing{Nemo.fmpz}) = Int(modulus(k))
+Base.size{T<:Nemo.FinField}(k::T) = Int(order(k))
+
+function create(n::Int64,k::Nemo.Ring)
+  A=Array(k,n)
+  c=size(k)-1
   for i in 1:n
-    A[i]=k(rand(0:c-1))
+    A[i]=k(rand(0:c))
   end
   return A
 end
 
-function createPol(n::Int64,K::Nemo.Ring,c::Int64=5)
+function createPol(n::Int64,K::Nemo.Ring)
   k=base_ring(K)
-  return K(fq_nmod[k(rand(0:c-1)) for i in 1:n+1])
+  return K(create(n,k))
 end
 
 function createIrrPol(n::Int64,K::Nemo.Ring)
@@ -24,10 +28,11 @@ function createIrrPol(n::Int64,K::Nemo.Ring)
   return P
 end
 
-function create2d(m::Int64,n::Int64,k::Nemo.Field)
-  A=Array(fq_nmod,(n,m))
+function create2d(m::Int64,n::Int64,k::Nemo.Ring)
+  A=Array(k,n,m)
+  c=size(k)-1
   for i in 1:n, j in 1:m
-    A[i,j]=k(rand(0:4))
+    A[i,j]=k(rand(0:c))
   end
   return A
 end
