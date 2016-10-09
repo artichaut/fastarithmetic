@@ -106,7 +106,7 @@ Feo}}
 Julia is a free and open-source, high-level programming language developed since 
 2012, with dynamic
 type system and high-performance. It is a compiled language, with a
-\emph{just-in-time} (jit) compilation. This means that when one write a
+\emph{just-in-time} (jit) compilation. This means that when one writes a
 function, e.g. 
 \begin{verbatim}
 julia> function myFunction(n)
@@ -595,11 +595,11 @@ ring $A$ in $O(n^\omega)$ operations in $A$ (we know that $2 < \omega \leq
 Since Julia is easy-to-write, we hope it is also
 easy-to-read. If not, it is probably due to the way FastArithmetic.jl is written,
 rather than to Julia itself. The code can be found at
-\url{https://gitbub.com/edouardRousseau/FastArithmetic.jl}. What's more, it is really
+\url{https://github.com/edouardRousseau/FastArithmetic.jl}. What's more, it is really
 easy to install personal packages, one just has to clone the repository
 inside Julia, using
 \begin{verbatim}
-julia> Pkg.clone(``https://github/edouardRousseau/FastArithmetic.jl'') 
+julia> Pkg.clone(``https://github.com/edouardRousseau/FastArithmetic.jl'') 
 \end{verbatim}
 and the package can be easily tested by running the following.
 \begin{verbatim}
@@ -638,7 +638,7 @@ is more stable than the mean time and still gives an idea of the average time
 the function will take. The stability we are talking about is linked with the
 memory management in Julia. Indeed, in Julia, we do not have to concern about
 memory, and the variables we assign are cleared by the Garbage Collector
-(GC). The time Julia pass in the GC is not very clear nor predictible, and the
+(GC). The time Julia passes in the GC is not very clear nor predictible, and the
 operations in the GC take a significant time. That is why the time taken by a
 function can change between two samples, depending on the time spent in the GC.
 By default, before every benchmark, the garbage is automaticaly collected, but
@@ -667,7 +667,7 @@ In the tables, the speed of
 the C code is set to $1.00$, and smaller is better. One of the functions 
 benchmarked in the C code, the modular multiplication \textbf{mulmod}, was 
 already implemented in Nemo, so we start to compare the results. We see no
-difference in terms of speed and it was predictible : the Julia
+difference in terms of speed and it was predictible: the Julia
 function is calling C code.
 
 \begin{center}
