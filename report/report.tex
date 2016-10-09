@@ -106,14 +106,14 @@ Feo}}
 Julia is a free and open-source, high-level programming language developed since 
 2012, with dynamic
 type system and high-performance. It is a compiled language, with a
-\emph{just-in-time} (jit) compilation. This means that when you write a
+\emph{just-in-time} (jit) compilation. This means that when one write a
 function, e.g. 
 \begin{verbatim}
 julia> function myFunction(n)
        return n^3+n+2
        end
 \end{verbatim}
-your function will be compiled during your very first call. After this first
+the function will be compiled during the very first call. After this first
 call, it will be much faster to run the compiled function
 \begin{verbatim}
 julia> myFunction(BigInt(2)^300)
@@ -123,7 +123,7 @@ than the expression below.
 julia> (BigInt(2)^300)^3 + BigInt(2)^300 + 2
 \end{verbatim}
 In order to optimize the code, the compiler creates a new function for each
-type of input that you can think of when calling myFunction. For example, in the
+type of input that one can think of when calling myFunction. For example, in the
 code 
 below, Julia will compile myFunction three times, which will result in
 three functions, each one of them optimized for \texttt{Int64} (the default type
@@ -136,9 +136,8 @@ julia> myFunction(17.)
 julia> myFunction(BigInt(17))
 4932
 \end{verbatim}
-Julia is a very easy-to-learn language, I had never seen Julia code before the 
-internship, and I am not an expert in computer science, but the writing part of
-the code was not the hardest. 
+Julia is a very easy-to-learn language, the syntax is intuitive for someone who
+already worked with high-level langages, like Python.
 The code written in \href{https://github.com/edouardRousseau/FastArithmetic.jl}{FastArithmetic.jl} is
 very generic, thanks to the type system of Julia, and works for fields
 $\mathbb{F}_{p^n}$ with a small $p$ as well as large $p$. More importantly, the
@@ -150,12 +149,12 @@ type.
 
 \subsection{Nemo}
 
-Nemo is a computer algebra package of Julia, you can install it with 
+Nemo is a computer algebra package of Julia, it can be installed with 
 \begin{verbatim}
 julia> Pkg.add("Nemo")
 julia> using Nemo
 \end{verbatim}
-and test it with the following.
+and tested with the following.
 \begin{verbatim}
 julia> Pkg.test(``Nemo'')
 \end{verbatim}
@@ -165,7 +164,7 @@ internship is based on Nemo. Indeed, we work with Nemo finite fields and Nemo
 polynomials over these fields. \texttt{fq}, \texttt{fq\_nmod}, and
 \texttt{fq\_nmod\_poly} (the type of the polynomials over $\mathbb{F}_{p^n}$) 
 are
-all Nemo types. You can learn more in Nemo's manual, which is very well
+all Nemo types. The interested reader can learn more in Nemo's manual, which is very well
 documented.
 
 \section{A bit of theory}
@@ -180,19 +179,18 @@ being able to embed small fields into large ones, or project elements of large
 fields into smaller ones (when possible).
 
 These algorithms often rely on linear algebra, and the cost is at least 
-quadratic in
-the degree of the extension you are dealing with. The algorithms presented
+quadratic in the degree of the extension used. The algorithms presented
 in~\cite{DeDoSc14} rely on polynomial arithmetic, and have a quasi-linear cost for 
 most of the algorithms needed to
 compute in the algebraic closure of a finite field. In this section, we will
 introduce (briefly) the tools used in the algorithms, and explain how they work.
-The most important result is the \emph{transposition principle}, which is an
-algorithmic proposition that guarantees that if you have a linear algorithm
-performing a matrix-vector product $v\mapsto Mv$, you can \emph{transpose} it to
+The most important result is the \emph{transposition principle}, an
+algorithmic proposition that guarantees that with any linear algorithm
+performing a matrix-vector product $v\mapsto Mv$, one can \emph{transpose} it to
 obtain another algorithm, which has essentially the same cost, performing the 
 transposed matrix-vector product $v\mapsto
 M^tv$. But we first need to talk about \emph{duality}, because the transposition
-principle also changes the basis you are working with.
+principle also changes the used basis. 
 \subsection{Trace and duality}
 Let $k$ be a finite field, and  $E,F$ be two $k$-vector spaces with the same
 finite dimension $\dim E = \dim F < \infty$. Let also
@@ -212,7 +210,7 @@ unique map $u^t:F'\rightarrow F$ such that $\forall (a,b)\in E\times
 F',\ps{u(a)}{b}'=\ps{a}{u^t(b)}$. This map is called the \emph{dual} map of $u$,
 with respect to $\ps{\cdot}{\cdot}$ and $\ps{\cdot}{\cdot}'$.
 
-It's now time to speak about the \emph{trace form}, it will be our candidate to 
+It is now time to speak about the \emph{trace form}, it will be our candidate to 
 be 
 $\ps{\cdot}{\cdot}$, the non-degenerate bilinear form. Let $P$ be an irreducible
 polynomial of $k[x]$ of degree $m$, let $K=k[x]/(P)$ be a finite
@@ -278,7 +276,7 @@ bases $(\bxi,\bupsilon)$, then the matrix of the linear map $u^t:F'\rightarrow
 F$ in the bases
 $(\bupsilon^*,\bxi^*)$ is $M^t$. Given an algorithm to compute a linear map
 $u:E\rightarrow E'$ in the bases $(\bxi,\bupsilon)$, the transposition principle
-says that you can transpose it to obtain a new algorithm computing the dual map 
+says that one can transpose it to obtain a new algorithm computing the dual map 
 $u^t:F'\rightarrow F$ in the bases
 $(\bupsilon^*,\bxi^*)$. The costs of the two algorithms only differ by a
 constant. Roughly speaking, transposing an algorithm consists on transposing all
@@ -370,7 +368,7 @@ polynomial of the sequence.
 \subsection{The algorithms}
 \label{sec-algo}
 All the algorithms described here, and their complexity analysis, have been
-discussed in~\cite{DeDoSc14}, that's why we will not show all the pseudo-codes but
+discussed in~\cite{DeDoSc14}, that is why we will not show all the pseudo-codes but
 rather try to explain how they work and on which result they are based. The 
 complexities will also be given without any proofs. 
 
@@ -594,31 +592,29 @@ ring $A$ in $O(n^\omega)$ operations in $A$ (we know that $2 < \omega \leq
 
 
 \section{Julia/Nemo in practice}
-Since Julia is easy-to-write, I hope it's also
-easy-to-read. If not, I think that it is due to my lack of experience in
-software programing, rather than to Julia itself. You can find the code
-at
+Since Julia is easy-to-write, we hope it is also
+easy-to-read. If not, it is probably due to the way FastArithmetic.jl is written,
+rather than to Julia itself. The code can be found at
 \url{https://gitbub.com/edouardRousseau/FastArithmetic.jl}. What's more, it is really
-easy to install personal packages, you just have to clone my repository
+easy to install personal packages, one just has to clone the repository
 inside Julia, using
 \begin{verbatim}
 julia> Pkg.clone(``https://github/edouardRousseau/FastArithmetic.jl'') 
 \end{verbatim}
-and you can also test the package easily by running the following.
+and the package can be easily tested by running the following.
 \begin{verbatim}
 julia> Pkg.test(``FastArithmetic'') 
 \end{verbatim}
-You may want to update the package, because the code is very likely to 
-change, so just use
+The code is very likely to change, but it is possible to update the package as
+follows.
 \begin{verbatim}
 julia> Pkg.update()
 \end{verbatim}
-and you will be ready to start again. 
 \subsection{Benchmarks}
 We will now look at the speed of the code in Julia, and compare it with
 the speed in C. All the benchmarks in Julia were realised with the
-\texttt{@benchmark} macro available in the BenchmarkTools package. This macro lets you
-benchmark any function with 
+\texttt{@benchmark} macro available in the BenchmarkTools package. This macro
+can be used to benchmark any function with 
 
 \begin{verbatim}
 julia>@benchmark 1+1
@@ -636,17 +632,19 @@ BenchmarkTools.Trial:
 \end{verbatim}
 which runs the desired function and measures the time it takes. It is possible
 to choose all the parameters (number of samples, number of evaluation
-per sample,\dots) of the benchmark and you can use different
+per sample,\dots) of the benchmark and one can use different
 estimators. For the following benchmarks, we use the median time, because it
 is more stable than the mean time and still gives an idea of the average time
 the function will take. The stability we are talking about is linked with the
-memory management in Julia. Indeed, in Julia, we don't have to concern about
+memory management in Julia. Indeed, in Julia, we do not have to concern about
 memory, and the variables we assign are cleared by the Garbage Collector
 (GC). The time Julia pass in the GC is not very clear nor predictible, and the
-operations in the GC take a significant time. That's why the time taken by a
+operations in the GC take a significant time. That is why the time taken by a
 function can change between two samples, depending on the time spent in the GC.
 By default, before every benchmark, the garbage is automaticaly collected, but
-there is still a bit of instability.
+there is still a bit of instability. We benchmark our functions in the case
+$p=5$, as in~\cite{DeDoSc14}, because no difference is seen between different
+values of $p$.
 Since all the functions written in FastArithmetic.jl depend on at least one
 polynomial $P$, sometimes also $Q$ and $R=P\odot Q$, we let $m=\deg (P)$ grow
 from $1$ to $200$ and benchmark the functions for all these values of $m$. We
@@ -657,13 +655,13 @@ always use the same list and to be sure that we are not using special
 polynomials that could be speeding up the functions (like sparse
 polynomials). When only one field is involved in an operation (such as in 
 modular multiplication or in change of basis) the field used is 
-$\mathbb{F}_{m(m+1)}\cong k[z]/(R)$.
+$\mathbb{F}_{p^{m(m+1)}}\cong k[z]/(R)$.
 
 The benchmarks of the C code were realized thanks to a python 
 script written by the authors of the code, that you can find at 
 \url{https://github.com/defeo/ff\_compositum}. The benchmarks work the same but not 
-all the values of $m$ were tested, so I just chose to compare the results for 
-certain values of $m$ tested (I also could have change the script\dots).
+all the values of $m$ were tested, so we just chose to compare the results for 
+certain values of $m$ tested (we also could have change the script\dots).
 
 In the tables, the speed of
 the C code is set to $1.00$, and smaller is better. One of the functions 
@@ -686,40 +684,31 @@ function is calling C code.
   \end{tabular}
 \end{center}
 The speed of \textbf{monomialToDual} and of \textbf{dualToMonomial} are the 
-same, either in C or Julia, so we show the results only for the first. The 
-results are really disappointing and awfully slow. This is sad because these 
-functions are important: they should be used really often to switch between 
-the different bases. Even given the simplicity of these algorithms, I can't 
-find a way to speed them up. Perhaps I did an obvious mistake. The algorithm 
-for the transposed modular multiplication is in the same case. 
+same, either in C or Julia, so we show the results only for the first.
+All the Julia functions differ from the C ones by a
+constant factor, which depends on the functions but is around $8$.
+Surprisingly, \textbf{InversePhi1} is three times faster than its transposition
+\textbf{Phi1}, and \textbf{InversePhi2} is slower than \textbf{Phi2} for small
+values of $m$ but equals its speed at $m\approx 100$ and is two times faster for $m\geq170$.
+In Julia, the cross point between \textbf{Phi1} and \textbf{Phi2} is earlyer than
+in C, it occures at $m=30$.
 
-Surprisingly, even with starting that bad, the algorithms for computing 
-embeddings, projections (ie. sections) and isomorphisms (at least one of them) 
-are not so far away, they are around $30$ times slower than C. The 
-implementations are probably optimizable, and we could maybe approach the $C$ 
-speed a little more. \textbf{inversePhi1} is, for an unknown 
-reason, three times faster than its transposition \textbf{Phi1}. As for 
-\textbf{Phi2} and its slowness, the causes are maybe both a greatly optimizable 
-implementation and difficulties for Julia to handle matrix operations 
-appearing in \textbf{Phi2}. \textbf{inversePhi2} is even slower, but it is not 
-surprising, since it uses \textbf{mulmodT} a lot of times, which is very slow 
-itself. We did not mention the time to compute $R$ in these tables, the reason 
+We did not mention the time to compute $R$ in these tables, the reason 
 is because the implementation of the \textsc{Berlekamp-Massey} algorithm used 
 in it is naive, so the algorithm \textbf{computeR} can be improved easily by 
-improving \textsc{Berlekamp-Massey}. But for now, the results of 
-\textbf{computeR} 
-are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
+improving \textsc{Berlekamp-Massey}.
+
 \begin{center}
 \begin{tabular}[here]{ccc}
 \textbf{monomialToDual} & \textbf{mulModT} & \textbf{embed} \\
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $193$\\
-   $51$ & $1.7\times 10^3$\\
-   $104$ & $4.5\times 10^3$\\
-   $140$ & $7.3\times 10^3$\\
-   $187$ & $1.4\times 10^4$\\
+   $10$ & $10.50$\\
+   $51$ & $10.92$\\
+   $104$ & $10.26$\\
+   $140$ & $10.43$\\
+   $187$ & $11.03$\\
 
   \end{tabular}
 
@@ -727,11 +716,11 @@ are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
   
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $286$\\
-   $51$ & $2.6\times 10^3$\\
-   $104$ & $6.8\times 10^3$\\
-   $140$ & $1.17\times 10^4$\\
-   $187$ & $2\times 10^4$\\
+   $10$ & $19.92$\\
+   $51$ & $15.62$\\
+   $104$ & $16.23$\\
+   $140$ & $17.73$\\
+   $187$ & $17.97$\\
 
   \end{tabular}
 
@@ -739,23 +728,35 @@ are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $31.30$\\
-   $51$ & $37.17$\\
-   $104$ & $35.29$\\
-   $140$ & $33.87$\\
-   $187$ & $30.87$\\
+   $10$ & $5.29$\\
+   $51$ & $4.51$\\
+   $104$ & $3.85$\\
+   $140$ & $6.78$\\
+   $187$ & $5.42$\\
 
   \end{tabular}\\
 
     \textbf{project} & \textbf{phi1} & \textbf{phi2} \\
+ 
+  \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $5.73$\\
+   $51$ & $3.54$\\
+   $104$ & $3.00$\\
+   $140$ & $2.65$\\
+   $187$ & $6.44$\\
+
+  \end{tabular}
+
+  &
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $32.77$\\
-   $51$ & $30.64$\\
-   $104$ & $26.64$\\
-   $140$ & $24.24$\\
-   $187$ & $20.64$\\
+   $10$ & $5.39$\\
+   $51$ & $6.29$\\
+   $104$ & $5.26$\\
+   $140$ & $4.91$\\
+   $187$ & $5.74$\\
 
   \end{tabular}
 
@@ -763,40 +764,30 @@ are of the same order of those of \textbf{monomialToDual} and \textbf{mulModT}.
  
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
-   $10$ & $25.83$\\
-   $51$ & $29.55$\\
-   $104$ & $22.53$\\
-   $140$ & $22.94$\\
-   $187$ & $22.12$\\
-
-  \end{tabular}
-
-  &
- 
-  \begin{tabular}[here]{cc}
-   $m$ & Julia \\
-   $10$ & $2.56$\\
-   $51$ & $102$\\
-   $104$ & $187$\\
-   $140$ & $309$\\
-   $187$ & $449$\\
+   $10$ & $1.90$\\
+   $51$ & $3.40$\\
+   $104$ & $5.78$\\
+   $140$ & $8.28$\\
+   $187$ & $9.94$\\
 
   \end{tabular}
 \end{tabular}
 \end{center}
 
-\section{Conclusion and future work}
-Unfortunately, the power of Julia has not been demonstrated in this paper, and 
-we were unable to match C speed. But, as we saw, certain algorithms were not so 
-far. With further investigations, we could understand why some functions are 
-slow; and, since the functions are inter-dependent, speed up the whole. If you 
-find any error in this report, you can send me a message 
-(edouard.rousseau@u-psud.fr). You can do the same if you find the code in 
-FastArithmetic.jl unreadable, or if you see how I managed to slow the 
-algorithms. Finally, I would like to thank \textsc{Luca De Feo} for taking me 
-as an intern during the summer, and for answering my naive questions by mail or 
-in front of a coffee. I also hope you enjoyed reading this paper, have a good 
-day!
+\section{Conclusion}
+As we see, we are not able to reach C speed, and the Julia code is slower by a
+constant factor, approximately $8$. With further investigations and
+understanding of the Julia langage, we could probably diminish this constant.
+Anyway, Julia provides a much more generic code and we could have benchmarked
+the code for $p=2^{127}-1$ without changing a single line. On top of that, Julia
+provides a variety of tools that makes life easier when coding : the benchmark
+parckage, the package manager, a high-level syntax\dots It will be up to reader
+to decide if the price of the constant factor $8$ is too much.
+
+Any error in this report or in the code of FastArithmetic.jl can be signaled by
+e-mail (edouard.rousseau@u-psud.fr). Finally, this work would not have been done
+without the help of Luca \textsc{De Feo}, who took the time to answer all the
+naive questions he received.
 
 
 \clearpage
