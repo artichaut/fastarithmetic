@@ -776,7 +776,8 @@ improving \textsc{Berlekamp-Massey}.
 
 \section{Conclusion}
 As we see, we are not able to reach C speed, and the Julia code is slower by a
-constant factor, approximately $8$. With further investigations and
+constant factor, approximately $8$. Part of this factor is due to
+precomputations in C that are not done in Julia. With further investigations and
 understanding of the Julia langage, we could probably diminish this constant.
 Anyway, Julia provides a much more generic code and we could have benchmarked
 the code for $p=2^{127}-1$ without changing a single line. On top of that, Julia
