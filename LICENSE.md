@@ -1,4 +1,4 @@
-The FastArithmeticGF.jl package is licensed under the MIT "Expat" License:
+The FastArithmetic.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2016: Édouard Rousseau.
 >
