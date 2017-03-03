@@ -22,7 +22,7 @@ function benchPhi1_pre(sizes=2:200)
     Q = irrPol[j+1]
     a = create2d(j,j+1,k)
     up = monomialToDual([k(1)],P)
-    b = @benchmark phi1($a,$P,$Q, $up)
+    b = @benchmark phi1_pre($a,$P,$Q, $up)
     A[i,1],A[i,2]=j,median(b).time/10^9
     writedlm("benchmarks/phi1_pre.txt",A)
   end
@@ -49,7 +49,7 @@ function benchinversePhi1_pre(sizes=1:200)
     Q = irrPol[j+1]
     a = create(j*(j+1),k)
     up = monomialToDual(T[k(1)],P)
-    b = @benchmark inversePhi1($a,$P,$Q,$up)
+    b = @benchmark inversePhi1_pre($a,$P,$Q,$up)
     A[i,1],A[i,2]=j,median(b).time/10^9
     writedlm("benchmarks/inversePhi1_pre.txt",A)
   end
@@ -203,7 +203,7 @@ function benchPhi2InvCompR_pre(sizes=2:200)
     up = monomialToDual(T[k(1)],P)
     R = @timed computeR(P,Q)
     b = @benchmark phi2_pre($a,$P,$Q,$(R[1]), $up)
-    bbis = @benchmark inversePhi2($abis,$P,$Q,$(R[1]), $up)
+    bbis = @benchmark inversePhi2_pre($abis,$P,$Q,$(R[1]), $up)
     A[i,1],A[i,2],A[i,3],A[i,4]=j,median(b).time/10^9,median(bbis).time/10^9,R[2]
     writedlm("benchmarks/phi2inversephi2CompR_pre.txt",A)
   end
