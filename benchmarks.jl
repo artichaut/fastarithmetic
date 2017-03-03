@@ -52,7 +52,7 @@ function benchMonomialToDual_pre(sizes=1:200)
     TP = reverse(P, m+1)
     TP = gcdinv(TP, t^m)[2] 
     a = create(J,k)
-    b = @benchmark monomialToDual_pre($a,$P, $TP)
+    b = @benchmark monomialToDual_pre($a,$P, $(TP))
     A[i,1],A[i,2]=j,median(b).time/10^9
     writedlm("benchmarks/monomialToDual_pre.txt",A)
   end
