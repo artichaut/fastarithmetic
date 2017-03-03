@@ -209,7 +209,7 @@ function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
   R::PolyElem{T}=K(T[r[i] for i in 1:m])# useless creation of a list... memory !
   α::PolyElem{T}=reverse(P,m+1)
   α=gcdinv(α,t^(n-m))[2]
-  b::Array{T,1}=copy(r)
+  b::Array{T,1}=copy(r) # copy + push! : cost ?
   while length(b)<n
     push!(b,k(0))
   end
@@ -342,7 +342,7 @@ function project{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   for j in 2:n
     c[j]=k(0)
   end
-  u::Array{T,1}=remT(c,Q,m*n) # it seems : only thing expensive
+  u::Array{T,1}=remT(c,Q,m*n) # it seems to be the only thing expensive
   K::Nemo.Ring=parent(P)
   d::PolyElem{T}=K([a[j]*u[j] for j in 1:(m*n)])%P
   return T[coeff(d,j) for j in 0:(m-1)]
@@ -366,6 +366,26 @@ function phi1{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T})
   m::Int64=degree(P)
   n::Int64=degree(Q)
   u::Array{T,1}=remT(monomialToDual(T[k(1)],P),P,m*(n+1)-1)
+  a::Array{T,1}=Array(T,m*n)
+  for j in 1:m*n
+    a[j]=k(0)
+  end
+  for i in 1:m
+    t::Array{T,1}=remT(b[:,i],Q,m*n)
+    for j in 1:m*n
+      a[j]=a[j]+t[j]*u[i+j-1] # /!\ indices
+    end
+  end
+  return a
+end
+
+export phi1_pre
+function phi1_pre{T}(b::Array{T,2},P::PolyElem{T},Q::PolyElem{T}, up::Array{T,1})
+  k::Nemo.Ring=parent(b[1,1])
+  @assert k==base_ring(Q)
+  m::Int64=degree(P)
+  n::Int64=degree(Q)
+  u::Array{T,1}=remT(up,P,m*(n+1)-1)
   a::Array{T,1}=Array(T,m*n)
   for j in 1:m*n
     a[j]=k(0)
@@ -409,6 +429,25 @@ function inversePhi1{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T})
   return b
 end
 
+export inversePhi1_pre
+function inversePhi1_pre{T}(a::Array{T,1},P::PolyElem{T},Q::PolyElem{T}, up::Array{T,1})
+  k::Nemo.Ring=parent(a[1,1])
+  @assert k==base_ring(Q)
+  K::Nemo.Ring=parent(Q)
+  y::PolyElem{T}=gen(K)
+  m::Int64=degree(P)
+  n::Int64=degree(Q)
+  b::Array{T,2}=Array(T,(n,m))
+  u::Array{T,1}=remT(up,P,m*(n+1)-1)
+  for i in m:-1:1
+    d::PolyElem{T}=K([a[j]*u[i+j-1] for j in 1:(m*n)])%Q
+    for j in 1:n
+    b[j,i]=coeff(d,j-1)
+    end
+  end
+  return b
+end
+
 export phi2
 
 """
@@ -431,6 +470,65 @@ function phi2{T,Y}(b::Array{T,2},P::Y,Q::Y,R::Y)
   q::Int64=ceil(N/p)
   y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   up::Array{T,1}=monomialToDual(T[k(1)],P)
+  S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
+  U::Y=gcdinv(S,R)[2]
+
+  Sprime::Array{Y,1}=Array(Y,q+1)
+  Sprime[1]=K(1)
+
+  for i in 2:(q+1)
+    Sprime[i]=mulmod(Sprime[i-1],S,R)
+  end
+
+  MT::Nemo.Ring=MatrixSpace(K,q,n)
+  mt::MatElem=MT()
+
+  for i in 1:q
+    c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
+    for j in 1:n
+      mt[i,j]=K(c[(j-1)*m+1:j*m])
+    end
+  end
+
+  MC::Nemo.Ring=MatrixSpace(K,p,q)
+  mc::MatElem=MC()
+
+  for i in 1:p
+    for j in 1:q
+      mc[i,j]=K(T[h+i*q+j-m-2 < 1 ? k(0) : h+i*q+j-m-2 > n ? k(0) : b[h,h+i*q+j-m-2] for h in 1:m])
+    end
+  end
+
+  Mv::MatElem=mc*mt
+
+  V::Array{Y,1}=Array(Y,p)
+  for i in 1:p
+    V[i]=sum([shift_left(Mv[i,j],(j-1)*m) for j in 1:n])%R
+  end
+
+  a::Y=K()
+
+  for i in p:-1:1
+    a=(Sprime[q+1]*a+V[i])%R
+  end
+
+  a=mulmod(a,U^(m-1),R)
+
+  return T[coeff(a,i) for i in 0:(m*n-1)]
+end
+
+export phi2_pre
+function phi2_pre{T,Y}(b::Array{T,2},P::Y,Q::Y,R::Y, up::Array{T,1})
+  k::Nemo.Ring=parent(b[1,1])
+  @assert k==base_ring(P)
+  K::Nemo.Ring=parent(P)
+  z=gen(K)
+  m::Int64=degree(P)
+  n::Int64=degree(Q)
+  N::Int64=n+m-1
+  p::Int64=ceil(sqrt(N))
+  q::Int64=ceil(N/p)
+  y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
   S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
   U::Y=gcdinv(S,R)[2]
 
@@ -550,6 +648,68 @@ function inversePhi2{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y)
   return T[coeff(cc[j-i+m],i-1) for i in 1:m, j in 1:n]
 end
 
-println("\nFastArithmetic comes with even less warranty\n")
+export inversePhi2_pre
+function inversePhi2_pre{T,Y}(a::Array{T,1},P::Y,Q::Y,R::Y,up::Array{T,1})
+  k::Nemo.Ring=parent(a[1])
+  @assert k==base_ring(P)
+  K::Nemo.Ring=parent(P)
+  m::Int64=degree(P)
+  n::Int64=degree(Q)
+  N::Int64=n+m-1
+  p::Int64=ceil(sqrt(N))
+  q::Int64=ceil(N/p)
+  y::Array{T,1}=monomialToDual(T[k(0),k(1)],Q)
+  S::Y=K(dualToMonomial(embed(up,P,y,Q),R))
+  U::Y=gcdinv(S,R)[2]
+
+  Sprime::Array{Y,1}=Array(Y,q+1)
+  Sprime[1]=K(1)
+
+  for i in 2:(q+1)
+    Sprime[i]=mulmod(Sprime[i-1],S,R)
+  end
+
+  MT::Nemo.Ring=MatrixSpace(K,n,q)
+  mt::MatElem=MT()
+
+  for i in 1:q
+    c::Array{T,1}=T[coeff(Sprime[i],h) for h in 0:(m*n-1)]
+    for j in 1:n
+      mt[j,i]=reverse(K(c[(j-1)*m+1:j*m]),m) # reverse in order to do transposed product
+    end
+  end
+
+  u::Y=powmod(U,m-1,R)
+  W::Y=mulTmid(remT(a,R,2*m*n-1),u,m*n-1)
+  a=T[coeff(W,j) for j in 0:(m*n-1)]
+
+  V::Array{Array{T,1},1}=Array(Array{T,1},p)
+  A::Y=K()
+
+
+  for i in 1:p
+    V[i]=remT(a,R,m*n+m-1)
+    A=mulTmid(remT(a,R,2*m*n-1),Sprime[q+1],m*n-1) # That's the thing taking time !!!
+    a=T[coeff(A,j) for j in 0:(m*n-1)]
+  end
+
+  MV::Nemo.Ring=MatrixSpace(K,p,n)
+  mv::MatElem=MV()
+
+  for i in 1:p, j in 1:n
+    mv[i,j]=K(V[i][(j-1)*m+1:(j-1)*m+2*m-1])
+  end
+
+  mc::MatElem=mv*mt
+  cc::Array{Y,1}=Array(Y,p*q)
+
+  for i in 1:p, j in 1:q
+    cc[(i-1)*q+j]=shift_right(truncate(mc[i,j],2*m-1),m-1)
+  end
+
+  return T[coeff(cc[j-i+m],i-1) for i in 1:m, j in 1:n]
+end
+
+println("FastArithmetic comes with even less warranty\n")
 
 end
