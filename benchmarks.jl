@@ -192,6 +192,23 @@ function benchPhi2InvCompR(sizes=2:200)
   end
 end
 
+function benchPhi2InvCompR_pre(sizes=2:200)
+  A=Array(Float64,(length(sizes),4))
+  for (i,j) in enumerate(sizes)
+    println(j)
+    a = create2d(j+1,j,k)
+    abis = create(j*(j+1),k)
+    P = irrPol[j]
+    Q = irrPol[j+1]
+    up = monomialToDual(T[k(1)],P)
+    R = @timed computeR(P,Q)
+    b = @benchmark phi2_pre($a,$P,$Q,$(R[1]), $up)
+    bbis = @benchmark inversePhi2($abis,$P,$Q,$(R[1]), $up)
+    A[i,1],A[i,2],A[i,3],A[i,4]=j,median(b).time/10^9,median(bbis).time/10^9,R[2]
+    writedlm("benchmarks/phi2inversephi2CompR_pre.txt",A)
+  end
+end
+
 function benchPhi2(sizes=1:20)
   A=Array(Float64,(length(sizes),2))
   for (i,j) in enumerate(sizes)
