@@ -10,8 +10,8 @@ function benchPhi1(sizes=2:200)
     a = create2d(j,j+1,k)
     b = @benchmark phi1($a,$P,$Q)
     A[i,1],A[i,2]=j,median(b).time/10^9
+    writedlm("benchmarks/phi1.txt",A)
   end
-  writedlm("benchmarks/phi1.txt",A)
 end
 
 function benchinversePhi1(sizes=1:200)
@@ -117,19 +117,19 @@ function benchComputeR(sizes=1:20)
   end
 end
 
-function benchPhi2Inv(sizes=1:10)
-  A=Array(Float64,(length(sizes),3))
+function benchPhi2InvCompR(sizes=2:200)
+  A=Array(Float64,(length(sizes),4))
   for (i,j) in enumerate(sizes)
-    println(10*j)
-    a = create2d(10*j+1,10*j,k)
-    abis = create((10*j+1)*10*j,k)
-    P = irrPol[10*j]
-    Q = irrPol[10*j+1]
-    R = computeR(P,Q)
-    b = @benchmark phi2($a,$P,$Q,$R)
-    bbis = @benchmark inversePhi2($abis,$P,$Q,$R)
-    A[i,1],A[i,2],A[i,3]=10*j,median(b).time/10^9,median(bbis).time/10^9
-    writedlm("benchmarks/phi2inversephi2.txt",A)
+    println(j)
+    a = create2d(j+1,j,k)
+    abis = create(j*(j+1),k)
+    P = irrPol[j]
+    Q = irrPol[j+1]
+    R = @timed computeR(P,Q)
+    b = @benchmark phi2($a,$P,$Q,$(R[1]))
+    bbis = @benchmark inversePhi2($abis,$P,$Q,$(R[1]))
+    A[i,1],A[i,2],A[i,3],A[i,4]=j,median(b).time/10^9,median(bbis).time/10^9,R[2]
+    writedlm("benchmarks/phi2inversephi2CompR.txt",A)
   end
 end
 
