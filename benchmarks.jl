@@ -32,11 +32,29 @@ function benchMonomialToDual(sizes=1:200)
   for (i,j) in enumerate(sizes)
     println(j)
     J = j*(j+1)
-    P = createPol(J,K) 
+    P = createPol(J,K)
     a = create(J,k)
     b = @benchmark monomialToDual($a,$P)
     A[i,1],A[i,2]=j,median(b).time/10^9
     writedlm("benchmarks/monomialToDual.txt",A)
+  end
+end
+
+function benchMonomialToDual_pre(sizes=1:200)
+  A=Array(Float64,(length(sizes),2))
+  for (i,j) in enumerate(sizes)
+    println(j)
+    J = j*(j+1)
+    P = createPol(J,K)
+    m = degree(P)
+    R = Nemo.Ring=parent(P)
+    t = gen(R)
+    TP = reverse(P, m+1)
+    TP = gcdinv(TP, t^m)[2] 
+    a = create(J,k)
+    b = @benchmark monomialToDual_pre($a,$P, $TP)
+    A[i,1],A[i,2]=j,median(b).time/10^9
+    writedlm("benchmarks/monomialToDual_pre.txt",A)
   end
 end
 
