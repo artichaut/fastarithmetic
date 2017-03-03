@@ -90,6 +90,27 @@ function dualToMonomial{T}(b::Array{T,1},P::PolyElem{T})
   return T[coeff(d,i) for i in 0:(m-1)]
 end
 
+export dualToMonomial_pre
+function dualToMonomial_pre{T}(b::Array{T,1},P::PolyElem{T}, S::PolyElem{T})
+
+  # We first check if the elements of b and coefficients
+  # of P belong to the same field
+  k::Nemo.Ring=parent(b[1])
+  @assert k==base_ring(P)
+
+
+  # We set some constants, P is of degree m and belongs to the ring R = k[t]
+  m::Int64=degree(P)
+  R::Nemo.Ring=parent(P)
+  t::PolyElem{T}=gen(R)
+
+  # We compute S = 1/P' mod P, c = rev(P, m+1)b, d = cS mod P
+  c::PolyElem{T}=(reverse(P,m+1)*R(b))%(t^m)
+  c=reverse(c,m)
+  d::PolyElem{T}=(c*S)%P
+  return T[coeff(d,i) for i in 0:(m-1)]
+end
+
 export mulT
 
 """

@@ -69,6 +69,20 @@ function benchDualToMonomial(sizes=1:200)
   end
 end
 
+function benchDualToMonomial_pre(sizes=1:200)
+  A=Array(Float64,(length(sizes),2))
+  for (i,j) in enumerate(sizes)
+    println(j)
+    J = j*(j+1)
+    P = createPol(J,K)
+    S = gcdinv(derivative(P),P)[2]
+    a = create(J,k)
+    b = @benchmark dualToMonomial_pre($a,$P,$S)
+    A[i,1],A[i,2]=j,median(b).time/10^9
+    writedlm("benchmarks/dualToMonomial_pre.txt",A)
+  end
+end
+
 function benchEmbed(sizes=2:200)
   A=Array(Float64,(length(sizes),2))
   for (i,j) in enumerate(sizes)      # fails for fmpz if j=1
