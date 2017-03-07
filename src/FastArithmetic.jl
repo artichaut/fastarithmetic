@@ -201,21 +201,61 @@ An other linear extension algorithm. Take the r first values of a linear
 recurring sequence of minimal polynomial P and compute the n first values.
 """
 function remT{T}(r::Array{T,1},P::PolyElem{T},n::Int64)
+
+  # We first check if the elements of b and coefficients
+  # of P belong to the same ring
   m::Int64=degree(P)
   k::Nemo.Ring=base_ring(P)
   @assert k==parent(r[1])
+
+  # We compute the ring K = k[t]
   K::Nemo.Ring=parent(P)
   t::PolyElem{T}=gen(K)
-  R::PolyElem{T}=K(T[r[i] for i in 1:m])# useless creation of a list... memory !
+
+  # We compute α = 1/rev(P, m+1) mod t^(n-m)
+  R::PolyElem{T}=K(T[r[i] for i in 1:m]) # useless creation of a list... memory !
   α::PolyElem{T}=reverse(P,m+1)
   α=gcdinv(α,t^(n-m))[2]
+
+  # We add zeros to match the awaited size
   b::Array{T,1}=copy(r) # copy + push! : cost ?
   while length(b)<n
     push!(b,k(0))
   end
+
+  # We compute the final result
   ans = R-shift_left((mullow(α,mulTmid(b,P,n-m),n-m)),m)
   return T[coeff(ans,j) for j in 0:n-1]
 end
+
+export remT_pre
+function remT_pre{T}(r::Array{T,1},P::PolyElem{T},n::Int64,TP::PolyElem{T})
+
+  # We first check if the elements of b and coefficients
+  # of P belong to the same ring
+  m::Int64=degree(P)
+  k::Nemo.Ring=base_ring(P)
+  @assert k==parent(r[1])
+
+  # We compute the ring K = k[t]
+  K::Nemo.Ring=parent(P)
+  t::PolyElem{T}=gen(K)
+
+  # We compute α = 1/rev(P, m+1) mod t^(n-m)
+  R::PolyElem{T}=K(T[r[i] for i in 1:m]) # useless creation of a list... memory !
+  α::PolyElem{T}=TP % t^(n-m)
+
+  # We add zeros to match the awaited size
+  b::Array{T,1}=copy(r) # copy + push! : cost ?
+  while length(b)<n
+    push!(b,k(0))
+  end
+
+  # We compute the final result
+  ans = R-shift_left((mullow(α,mulTmid(b,P,n-m),n-m)),m)
+  return T[coeff(ans,j) for j in 0:n-1]
+end
+
 
 export remTnaif
 

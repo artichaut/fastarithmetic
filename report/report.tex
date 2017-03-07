@@ -405,7 +405,7 @@ $\sum_{i=0}^{m-1}\tau_P(ax^i)x^i$ gives a solution to go from the monomial basis
 to the dual basis, that can be written as follows.
 \newline
 
-\textbf{MonomialToDual}(a, P)\\
+\texttt{monomialToDual}(a, P)\\
 \textbf{Input} $\textbf{a}=(a_i)_{0\leq i\leq m-1}\in k^m$, $P$ an irreducible
 monic polynomial of degree~$m$.\\
 \textbf{Output} $(\tau_P(ax^i))_{0\leq i \leq m-1}$, with $a=\sum_{0\leq i
@@ -430,7 +430,7 @@ P$, so taking the coefficients of $a$ gives the coefficients in the monomial
 basis $\bxi$.
 \newline
 
-\textbf{DualToMonomial}(b, P)\\
+\texttt{dualToMonomial}(b, P)\\
 \textbf{Input} $\textbf{b}=(b_i)_{0\leq i\leq m-1}\in k^m$, $P$ an irreducible
 monic polynomial of degree $m$.\\
 \textbf{Output} $(a_i)_{0\leq i \leq m-1}$ such that
@@ -445,9 +445,9 @@ $\tau_P(\sum_{0\leq i \leq m-1}ax^{i+j})=b_j$ for all $j$
 
 As we see, even if the lemma holds in $k[[x]]$, we just need to work $\mod x^m$
 so the inverses can be obtained with fast algorithms for \textsc{Euclide}
-division. \textbf{MonomialToDual} uses $O(M(m))$ operations in $k$, where 
+division. \texttt{monomialToDual} uses $O(M(m))$ operations in $k$, where 
 $M(m)$ is the number of operations in $A$ of a multiplication of polynomials of 
-degree at most $m$ on any ring $A$. The cost of \textbf{DualToMonomial} is 
+degree at most $m$ on any ring $A$. The cost of \texttt{dualToMonomial} is 
 $O(M(m)\log(m))$, but can be reduced to $O(M(m))$ with precomputations. $M$ is 
 a function that is quasi-linear, so the change-of-basis algorithms are 
 quasi-linaear too. 
@@ -482,7 +482,7 @@ $\bzeta^*$. So we can obtain $\varphi_x$ and $\varphi_y$ by applying the last
 formula with respectively $c=1$ and $b=1$. This can be written as follows.
 \newline
 
-\textbf{Embed}(b, c, r)\\
+\texttt{embed}(b, c, r)\\
 \textbf{Input} $\textbf{b}=(b_i)_{0\leq i\leq m-1}\in k^m$,
 $\textbf{c}=(c_i)_{0\leq i\leq n-1}\in k^n$, an optional integer $r\geq mn$ set
 to $r=mn$ by defaut\\
@@ -492,17 +492,17 @@ to $r=mn$ by defaut\\
   \item $(u_i)_{0\leq i \leq r-1}=\remt(\textbf{c},P,r)$
   \item \textbf{return} $(t_iu_i)_{0\leq i \leq r-1}$
 \end{enumerate}
-\textbf{Embed} uses $O(r(M(m)/m + M(n)/n))$ operations in $k$.
+\texttt{embed} uses $O(r(M(m)/m + M(n)/n))$ operations in $k$.
 If $u_P$ is the vector of the coordinates of $1\in k[x]/(P)$ in the dual basis
 $\bxi^*$ and $u_Q$ the vector defined similarly, we can compute
-$\varphi_x=\textbf{Embed}(\cdot,u_Q)$ and $\varphi_y=\textbf{Embed}(u_P,\cdot)$.
+$\varphi_x=\texttt{embed}(\cdot,u_Q)$ and $\varphi_y=\texttt{embed}(u_P,\cdot)$.
 Since $R$ is the minimal polynomial of the sequence
-$(\tau_R(z^i))=\textbf{Embed}(u_P,u_Q)$, we can obtain $R$ by computing the
+$(\tau_R(z^i))=\texttt{embed}(u_P,u_Q)$, we can obtain $R$ by computing the
 \textsc{Berlekamp-Massey} algorithm (which computes minimal polynomials of linear
 sequences).
 
 As we have just seen, the theory of duality gives us a very simple algorithm for
-\textbf{Embed}, but together with the transposition principle, it will also
+\texttt{embed}, but together with the transposition principle, it will also
 prove useful to find algorithms for the section of $\varphi_x$, and, as we will
 see later, for $\Phi^{-1}$. Let $c\in k[y]/(Q)$ such that $\tau_Q(c)=1$ (for
 example $c=\upsilon^*_0$ is convenient), $\varepsilon:k[x]/(P)\to k[z]/(R),
@@ -519,7 +519,7 @@ Since $\psdot_P$ is non-degenerate, this means that
 $b'=\varepsilon^t(\Phi(b'))=\varepsilon^t(\varphi_x(b'))$ for all $b'\in 
 k[x]/(P)$. In other words, $\varepsilon^t$ is an inverse of $\varphi_x$ on its 
 image, also called a section of $\varphi_x$. Remarking that $\varepsilon$ is 
-nothing else that $\textbf{Embed}(\cdot,c)$, where $c=(1,0,\dots,0)$, we have 
+nothing else that $\texttt{embed}(\cdot,c)$, where $c=(1,0,\dots,0)$, we have 
 an algorithm for $\varepsilon$, and, by transposing this algorithm, we have an 
 algorithm for $\varepsilon^t$, which is the section of $\varphi_x$ we were 
 searching. This algorithm uses $O(nM(m)+nM(n))$ operations in $k$.
@@ -546,9 +546,9 @@ the first is better in cases where $m$ is small compared to $n$, and uses the
 linearity of $\Phi$ and the work already done. The idea is to express $b\in 
 k[x,y]/(P,Q)$ in the form $b=\sum_i^{m-1}b_ix^i$ with $b_i\in k[y]/(Q)$ for all 
 $0\leq i \leq m-1$. Since the $b_ix^i$ are all in $\Pi$, we can apply 
-\textbf{Embed} and sum the result to obtain $\Phi(b)=\sum_i^{m-1}\Phi(b_ix^i)$. 
+\texttt{embed} and sum the result to obtain $\Phi(b)=\sum_i^{m-1}\Phi(b_ix^i)$. 
 To apply this strategy, the $b_i$ must be expressed in the dual basis 
-$\bupsilon^*$ of $k[y]/(Q)$, because \textbf{Embed} takes its input in the dual 
+$\bupsilon^*$ of $k[y]/(Q)$, because \texttt{embed} takes its input in the dual 
 bases. In the end, exploiting the fact that the coordinates of the $x^i$ in the 
 dual basis $\bxi^*$ are $(\tau_P(x^{i+j}))_{0\leq j\leq m-1}$ ($u_P$ shifted 
 $i$ times), we have an algorithm to compute $\Phi$ in the basis 
@@ -571,7 +571,7 @@ b&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} b_{i,j}x^i y^j
 \end{eqnarray*}
 with $c_h(xy)=\sum_{0 \leq i \leq m-1} b_{i,i+h-m+1} (xy)^i$, and where 
 undefined indices $b_{i,i+h-m+1}$ equal zero. So $\Phi(xy)=z$ is known, but 
-also $T=\Phi(y)$, because $y\in\Pi$ so we can use $\textbf{Embed}$ to compute 
+also $T=\Phi(y)$, because $y\in\Pi$ so we can use $\texttt{embed}$ to compute 
 it. Then, we have 
 \[
 a = \frac{1}{T^{m-1}}\tilde a \mod R \text{ with } \tilde a = \sum_{h=0}^{m+n-2} 
@@ -665,14 +665,14 @@ certain values of $m$ tested (we also could have change the script\dots).
 
 In the tables, the speed of
 the C code is set to $1.00$, and smaller is better. One of the functions 
-benchmarked in the C code, the modular multiplication \textbf{mulmod}, was 
+benchmarked in the C code, the modular multiplication \texttt{mulmod}, was 
 already implemented in Nemo, so we start to compare the results. We see no
 difference in terms of speed and it was predictible: the Julia
 function is calling C code.
 
 \begin{center}
   \begin{tabular}[here]{c}
-    \textbf{mulmod} \\
+    \texttt{mulmod} \\
     \begin{tabular}[here]{cc}
    $m$ & Julia \\
    $10$ & $0.99$\\
@@ -683,24 +683,24 @@ function is calling C code.
     \end{tabular}
   \end{tabular}
 \end{center}
-The speed of \textbf{monomialToDual} and of \textbf{dualToMonomial} are the 
+The speed of \texttt{monomialToDual} and of \texttt{dualToMonomial} are the 
 same, either in C or Julia, so we show the results only for the first.
 All the Julia functions differ from the C ones by a
 constant factor, which depends on the functions but is around $8$.
-Surprisingly, \textbf{InversePhi1} is three times faster than its transposition
-\textbf{Phi1}, and \textbf{InversePhi2} is slower than \textbf{Phi2} for small
+Surprisingly, \texttt{inversePhi1} is three times faster than its transposition
+\texttt{phi1}, and \texttt{inversePhi2} is slower than \texttt{phi2} for small
 values of $m$ but equals its speed at $m\approx 100$ and is two times faster for $m\geq170$.
-In Julia, the cross point between \textbf{Phi1} and \textbf{Phi2} is earlyer than
+In Julia, the cross point between \texttt{phi1} and \texttt{phi2} is earlyer than
 in C, it occures at $m=30$.
 
 We did not mention the time to compute $R$ in these tables, the reason 
 is because the implementation of the \textsc{Berlekamp-Massey} algorithm used 
-in it is naive, so the algorithm \textbf{computeR} can be improved easily by 
+in it is naive, so the algorithm \texttt{computeR} can be improved easily by 
 improving \textsc{Berlekamp-Massey}.
 
 \begin{center}
 \begin{tabular}[here]{ccc}
-\textbf{monomialToDual} & \textbf{mulModT} & \textbf{embed} \\
+  \texttt{monomialToDual} & \texttt{monomialToDual\_pre} & \texttt{mulModT} \\
 
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
@@ -711,6 +711,19 @@ improving \textsc{Berlekamp-Massey}.
    $187$ & $11.03$\\
 
   \end{tabular}
+
+  &
+
+ \begin{tabular}[here]{cc}
+   $m$ & Julia \\
+   $10$ & $3.13$\\
+   $51$ & $2.99$\\
+   $104$ & $1.96$\\
+   $140$ & $2.06$\\
+   $187$ & $3.06$\\
+
+  \end{tabular}
+
 
   &
   
@@ -724,9 +737,14 @@ improving \textsc{Berlekamp-Massey}.
 
   \end{tabular}
 
-  &
+\end{tabular}
+\end{center}
+  
 
-  \begin{tabular}[here]{cc}
+\begin{center}
+\begin{tabular}[here]{cccc}
+  \texttt{embed} & \texttt{project} & \texttt{phi1} & \texttt{phi2} \\
+   \begin{tabular}[here]{cc}
    $m$ & Julia \\
    $10$ & $5.29$\\
    $51$ & $4.51$\\
@@ -734,10 +752,10 @@ improving \textsc{Berlekamp-Massey}.
    $140$ & $6.78$\\
    $187$ & $5.42$\\
 
-  \end{tabular}\\
+  \end{tabular}
 
-    \textbf{project} & \textbf{phi1} & \textbf{phi2} \\
- 
+  &
+
   \begin{tabular}[here]{cc}
    $m$ & Julia \\
    $10$ & $5.73$\\
