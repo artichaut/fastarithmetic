@@ -256,7 +256,6 @@ function remT_pre{T}(r::Array{T,1},P::PolyElem{T},n::Int64,TP::PolyElem{T})
   return T[coeff(ans,j) for j in 0:n-1]
 end
 
-
 export remTnaif
 
 """
@@ -297,6 +296,13 @@ Transposition of the modular multiplication.
 function mulModT{T}(P::Array{T,1},Q::PolyElem{T},R::PolyElem{T},n::Int64)
   q,r=degree(Q),degree(R)
   a = remT(P,R,n+q+1)
+  return mulTmid(a,Q,n)
+end
+
+export mulModT_pre
+function mulModT_pre{T}(P::Array{T,1},Q::PolyElem{T},R::PolyElem{T},n::Int64,TR::PolyElem{T})
+  q,r=degree(Q),degree(R)
+  a = remT_pre(P,R,n+q+1,TR)
   return mulTmid(a,Q,n)
 end
 
