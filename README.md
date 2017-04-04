@@ -10,6 +10,6 @@ Internship work at the université "Versailles Saint-Quentin-En-Yvelines" on an 
 
 The package can be installed using
 
-		Pkg.clone("https://github.com/edouardRousseau/FastArithmetic.jl")
+		Pkg.clone("https://github.com/erou/FastArithmetic.jl")
 
  in julia.
